@@ -227,9 +227,13 @@ body {
 .back-btn { background: none; border: none; color: var(--accent); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; }
 .install-hint { font-size: 12px; color: #A39B87; line-height: 1.5; background: #211E17; border: 1px solid #35311F; border-radius: 12px; padding: 14px; margin-top: 10px; }
 .install-hint b { color: #F5F0E1; }
+.update-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: var(--accent); color: #16140F; font-size: 13px; font-weight: 600; text-align: center; padding: calc(10px + env(safe-area-inset-top)) 14px 10px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.update-bar button { background: #16140F; color: #F5F0E1; border: none; border-radius: 8px; padding: 6px 12px; font-weight: 700; cursor: pointer; }
 </style>
 </head>
 <body>
+
+<div id="updateBar" class="update-bar hidden">✨ Nova versão disponível <button id="updateBtn">Atualizar</button></div>
 
 <!-- ONBOARDING -->
 <div id="onboarding" class="hidden">
@@ -352,6 +356,7 @@ body {
 
   <div class="section-label">Instalar no celular</div>
   <button class="ghost-btn" id="installBtn">📲 Instalar app</button>
+  <button class="ghost-btn" id="refreshBtn" style="margin-top:10px;">🔄 Buscar atualização</button>
   <div class="install-hint" id="installHint"></div>
 
   <div class="section-label">Zona de perigo</div>
@@ -1208,8 +1213,24 @@ function isStandalone(){ return window.matchMedia('(display-mode: standalone)').
 document.getElementById('installBtn').addEventListener('click', async ()=>{ if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; return; } if(isIOS()){ alert('No iPhone/iPad: toque em Compartilhar (quadrado com seta pra cima) na barra do Safari e escolha "Adicionar à Tela de Início".'); return; } alert('No celular: abra o menu do navegador (⋮) e toque em "Adicionar à tela inicial" / "Instalar app".'); });
 function renderInstallHint(){ const el=document.getElementById('installHint'); if(isStandalone()){ el.innerHTML='✅ <b>App instalado.</b> Você está usando em tela cheia.'; return; } if(isIOS()){ el.innerHTML='<b>iPhone / iPad:</b> abra no <b>Safari</b>, toque em <b>Compartilhar</b> ⬆️ e em <b>Adicionar à Tela de Início</b>.'; } else { el.innerHTML='<b>Android:</b> abra no <b>Chrome</b>, toque no menu <b>⋮</b> e em <b>Adicionar à tela inicial</b> / <b>Instalar app</b>. Funciona melhor com a página num link https.'; } }
 
+/* =================== AUTO-UPDATE =================== */
+const APP_VERSION = '20260725191448';
+function reloadFresh(){ location.href = location.pathname + '?v=' + Date.now(); }
+async function checkUpdate(){
+  if (APP_VERSION === '20260725191448') return; // arquivo local (não publicado)
+  try {
+    const r = await fetch('version.json?cb=' + Date.now(), { cache:'no-store' });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (j && j.version && j.version !== APP_VERSION) document.getElementById('updateBar').classList.remove('hidden');
+  } catch(e) {}
+}
+document.getElementById('updateBtn').addEventListener('click', reloadFresh);
+document.getElementById('refreshBtn').addEventListener('click', reloadFresh);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkUpdate(); });
+
 /* =================== INIT =================== */
-(function init(){ load(); setupPWA(); route(); })();
+(function init(){ load(); setupPWA(); route(); checkUpdate(); })();
 </script>
 </body>
 </html>
