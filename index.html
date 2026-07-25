@@ -171,6 +171,8 @@ body {
 .ti-sub { font-size: 11px; color: #6E6752; margin-top: 1px; }
 .ti-del { background: none; border: none; color: #6E6752; font-size: 18px; cursor: pointer; padding: 4px 8px; }
 .ti-del:hover { color: #FF5D3A; }
+.ti-edit { background: none; border: none; color: #6E6752; font-size: 16px; cursor: pointer; padding: 4px 6px; }
+.ti-edit:hover { color: var(--accent); }
 
 .field { margin-bottom: 12px; }
 .field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -463,7 +465,7 @@ body {
     </div>
 
     <div id="createStep2" class="hidden">
-      <div class="sheet-title">Criar desafio</div>
+      <div class="sheet-title" id="createStep2Title">Criar desafio</div>
       <div class="sheet-sub">Personalize do seu jeito.</div>
       <div class="field"><label>Nome do desafio</label><input type="text" id="cf_title" placeholder="Ex.: Ler todo dia" maxlength="28"></div>
       <div class="field"><label>Ícone</label><div class="emoji-row" id="cf_emojiRow"></div></div>
@@ -990,9 +992,10 @@ function openChalSheet() {
   const list=document.getElementById('sheetChalList'); list.innerHTML='';
   state.challenges.forEach(c=>{
     const it=document.createElement('div'); it.className='chal-item'+(c.id===state.activeId?' active':'');
-    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${heroCount(c)} • ${esc(c.unit)}</div></div><button class="ti-del" title="Excluir">🗑</button>`;
+    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${heroCount(c)} • ${esc(c.unit)}</div></div><button class="ti-edit" title="Editar">✎</button><button class="ti-del" title="Excluir">🗑</button>`;
     it.querySelector('.ti-body').addEventListener('click',()=>{ closeOverlay('chalSheet'); openDetail(c.id); });
     it.querySelector('.ti-emoji').addEventListener('click',()=>{ closeOverlay('chalSheet'); openDetail(c.id); });
+    it.querySelector('.ti-edit').addEventListener('click',(ev)=>{ ev.stopPropagation(); closeOverlay('chalSheet'); openEditChallenge(c.id); });
     it.querySelector('.ti-del').addEventListener('click',(ev)=>{ ev.stopPropagation(); requestDeleteChallenge(c.id); });
     list.appendChild(it);
   });
@@ -1001,11 +1004,58 @@ function openChalSheet() {
 document.getElementById('sheetNewChal').addEventListener('click', ()=>{ closeOverlay('chalSheet'); openCreate(); });
 document.getElementById('homeAddChal').addEventListener('click', ()=>openCreate());
 
-/* =================== CREATE =================== */
+/* =================== CREATE / EDIT =================== */
 let cf = { emoji:'🔥', color:'#E3B23C' };
 let cfMetrics = [];
 let cfVarTpl = null, cfVarChoice = null;
+let editingId = null;
+function buildCats(labels, existing){
+  return labels.map((label,i)=>{
+    const ex = (existing||[]).find(c=>c.label===label);
+    return ex ? ex : { key:'k'+i+'_'+label.toLowerCase().replace(/[^a-z0-9]/g,''), label, color:PALETTE[i%PALETTE.length] };
+  });
+}
+function buildMetricModules(metrics, existingModules){
+  const ex = (existingModules||[]).filter(m=>m.type==='metric');
+  return metrics.map(m=>{
+    const found = m.id ? ex.find(x=>x.id===m.id) : null;
+    return found ? { ...found, name:m.name, unit:m.unit } : { type:'metric', id:uid(), name:m.name, unit:m.unit };
+  });
+}
+function setCreateTitles(editing){
+  document.getElementById('createStep2Title').textContent = editing ? 'Editar desafio' : 'Criar desafio';
+  document.getElementById('createSave').textContent = editing ? 'Salvar alterações' : 'Criar desafio';
+}
+function openEditChallenge(id){
+  const chal = state.challenges.find(c=>c.id===id); if(!chal) return;
+  editingId = id;
+  cf = { emoji: chal.emoji, color: chal.color };
+  cfMetrics = (chal.modules||[]).filter(m=>m.type==='metric').map(m=>({ name:m.name, unit:m.unit, id:m.id }));
+  document.getElementById('cf_title').value = chal.title;
+  document.getElementById('cf_unit').value = chal.unit;
+  document.getElementById('cf_goal').value = chal.weeklyGoal;
+  document.getElementById('cf_mode').value = chal.mode;
+  document.getElementById('cf_sinceField').classList.toggle('hidden', chal.mode!=='abstain');
+  document.getElementById('cf_countField').classList.toggle('hidden', chal.mode!=='count');
+  document.getElementById('cf_since').value = chal.abstainStart || '';
+  document.getElementById('cf_target').value = chal.dailyTarget || '';
+  document.getElementById('cf_dunit').value = chal.dailyUnit || '';
+  const useCats = (chal.categories && chal.categories.length) > 0;
+  document.getElementById('cf_useCats').checked = useCats;
+  document.getElementById('cf_catsField').classList.toggle('hidden', !useCats);
+  document.getElementById('cf_cats').value = (chal.categories||[]).map(c=>c.label).join(', ');
+  document.getElementById('cf_useBody').checked = (chal.modules||[]).some(m=>m.type==='body');
+  document.getElementById('cf_mName').value=''; document.getElementById('cf_mUnit').value='';
+  renderMetricChips(); buildEmojiRow(); buildColorRow();
+  setCreateTitles(true);
+  document.getElementById('createStep1').classList.add('hidden');
+  document.getElementById('createStepVar').classList.add('hidden');
+  document.getElementById('createStep2').classList.remove('hidden');
+  setAccent(chal.color);
+  openOverlay('createSheet');
+}
 function openCreate() {
+  editingId = null; setCreateTitles(false);
   document.getElementById('createStep1').classList.remove('hidden');
   document.getElementById('createStepVar').classList.add('hidden');
   document.getElementById('createStep2').classList.add('hidden');
@@ -1057,10 +1107,15 @@ document.getElementById('startCustom').addEventListener('click', ()=>{
   document.getElementById('cf_mName').value=''; document.getElementById('cf_mUnit').value='';
   renderMetricChips();
   buildEmojiRow(); buildColorRow();
+  editingId = null; setCreateTitles(false);
   document.getElementById('createStep1').classList.add('hidden');
   document.getElementById('createStep2').classList.remove('hidden');
 });
-document.getElementById('createBack').addEventListener('click', ()=>{ document.getElementById('createStep2').classList.add('hidden'); document.getElementById('createStep1').classList.remove('hidden'); });
+document.getElementById('createBack').addEventListener('click', ()=>{
+  if (editingId) { editingId=null; closeOverlay('createSheet'); return; }
+  document.getElementById('createStep2').classList.add('hidden');
+  document.getElementById('createStep1').classList.remove('hidden');
+});
 document.getElementById('cf_useCats').addEventListener('change', (e)=>document.getElementById('cf_catsField').classList.toggle('hidden', !e.target.checked));
 document.getElementById('cf_mode').addEventListener('change', (e)=>{ const v=e.target.value; document.getElementById('cf_sinceField').classList.toggle('hidden', v!=='abstain'); document.getElementById('cf_countField').classList.toggle('hidden', v!=='count'); if(v==='abstain' && !document.getElementById('cf_since').value) document.getElementById('cf_since').value=todayKey; });
 function buildEmojiRow(){ const row=document.getElementById('cf_emojiRow'); row.innerHTML=''; EMOJIS.forEach(em=>{ const b=document.createElement('button'); b.className='emoji-opt'+(em===cf.emoji?' sel':''); b.textContent=em; b.addEventListener('click',()=>{ cf.emoji=em; buildEmojiRow(); }); row.appendChild(b); }); }
@@ -1071,17 +1126,30 @@ document.getElementById('createSave').addEventListener('click', ()=>{
   const title=document.getElementById('cf_title').value.trim()||'Meu desafio';
   const unit=document.getElementById('cf_unit').value.trim()||'dias seguidos';
   let goal=parseInt(document.getElementById('cf_goal').value,10); if(isNaN(goal)||goal<1)goal=1; if(goal>7)goal=7;
-  let cats=[];
-  if (document.getElementById('cf_useCats').checked) {
-    cats=document.getElementById('cf_cats').value.split(',').map(s=>s.trim()).filter(Boolean).map((label,i)=>({ key:'k'+i+'_'+label.toLowerCase().replace(/[^a-z0-9]/g,''), label, color:PALETTE[i%PALETTE.length] }));
-  }
-  const modules=[]; if (document.getElementById('cf_useBody').checked) modules.push('body');
   const mode=document.getElementById('cf_mode').value;
+  const labels = (mode==='check' && document.getElementById('cf_useCats').checked)
+    ? document.getElementById('cf_cats').value.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const bodyChecked = document.getElementById('cf_useBody').checked;
   const since = mode==='abstain' ? (document.getElementById('cf_since').value || todayKey) : undefined;
   const dailyTarget = mode==='count' ? (parseInt(document.getElementById('cf_target').value,10)||1) : undefined;
   const dailyUnit = mode==='count' ? (document.getElementById('cf_dunit').value.trim()||'vezes') : undefined;
-  addChallenge({ title, emoji:cf.emoji, color:cf.color, unit, goal, cats, modules, metrics: cfMetrics.slice(), mode, since, dailyTarget, dailyUnit });
-  closeOverlay('createSheet'); openDetail(state.activeId);
+  if (editingId) {
+    const chal = state.challenges.find(c=>c.id===editingId); if(!chal){ editingId=null; closeOverlay('createSheet'); return; }
+    chal.title=title; chal.emoji=cf.emoji; chal.color=cf.color; chal.unit=unit; chal.weeklyGoal=goal; chal.mode=mode;
+    chal.categories = mode==='check' ? buildCats(labels, chal.categories) : [];
+    chal.abstainStart = mode==='abstain' ? (since || chal.abstainStart || todayKey) : null;
+    chal.relapses = chal.relapses || [];
+    chal.dailyTarget = mode==='count' ? dailyTarget : null;
+    chal.dailyUnit = mode==='count' ? dailyUnit : null;
+    chal.modules = (bodyChecked?[{type:'body'}]:[]).concat(buildMetricModules(cfMetrics, chal.modules));
+    if (mode==='abstain') ensureAbstain(chal);
+    editingId=null; save(); closeOverlay('createSheet'); openDetail(chal.id);
+  } else {
+    const cats = buildCats(labels, []);
+    const modules=[]; if (bodyChecked) modules.push('body');
+    addChallenge({ title, emoji:cf.emoji, color:cf.color, unit, goal, cats, modules, metrics: cfMetrics.slice(), mode, since, dailyTarget, dailyUnit });
+    closeOverlay('createSheet'); openDetail(state.activeId);
+  }
 });
 
 /* =================== TRACKING MODULES =================== */
@@ -1187,9 +1255,10 @@ function renderProfileChalList() {
   if (!state.challenges.length){ list.innerHTML='<div class="body-empty">Nenhum desafio ainda.</div>'; return; }
   state.challenges.forEach(c=>{
     const it=document.createElement('div'); it.className='chal-item'+(c.id===state.activeId?' active':'');
-    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${totalDone(c.dates)} marcações • melhor ${calcBestStreak(c.dates)}</div></div><button class="ti-del" title="Apagar">🗑</button>`;
+    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${totalDone(c.dates)} marcações • melhor ${calcBestStreak(c.dates)}</div></div><button class="ti-edit" title="Editar">✎</button><button class="ti-del" title="Apagar">🗑</button>`;
     it.querySelector('.ti-body').addEventListener('click',()=>openDetail(c.id));
     it.querySelector('.ti-emoji').addEventListener('click',()=>openDetail(c.id));
+    it.querySelector('.ti-edit').addEventListener('click',(ev)=>{ ev.stopPropagation(); openEditChallenge(c.id); });
     it.querySelector('.ti-del').addEventListener('click',(ev)=>{ ev.stopPropagation(); requestDeleteChallenge(c.id); });
     list.appendChild(it);
   });
@@ -1214,10 +1283,10 @@ document.getElementById('installBtn').addEventListener('click', async ()=>{ if(d
 function renderInstallHint(){ const el=document.getElementById('installHint'); if(isStandalone()){ el.innerHTML='✅ <b>App instalado.</b> Você está usando em tela cheia.'; return; } if(isIOS()){ el.innerHTML='<b>iPhone / iPad:</b> abra no <b>Safari</b>, toque em <b>Compartilhar</b> ⬆️ e em <b>Adicionar à Tela de Início</b>.'; } else { el.innerHTML='<b>Android:</b> abra no <b>Chrome</b>, toque no menu <b>⋮</b> e em <b>Adicionar à tela inicial</b> / <b>Instalar app</b>. Funciona melhor com a página num link https.'; } }
 
 /* =================== AUTO-UPDATE =================== */
-const APP_VERSION = '20260725191448';
+const APP_VERSION = '20260725191853';
 function reloadFresh(){ location.href = location.pathname + '?v=' + Date.now(); }
 async function checkUpdate(){
-  if (APP_VERSION === '20260725191448') return; // arquivo local (não publicado)
+  if (APP_VERSION === '20260725191853') return; // arquivo local (não publicado)
   try {
     const r = await fetch('version.json?cb=' + Date.now(), { cache:'no-store' });
     if (!r.ok) return;
