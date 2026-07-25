@@ -56,6 +56,9 @@ body {
 /* generic */
 .hero { margin: 0 0 20px; text-align: center; background: #211E17; border: 1px solid #35311F; border-radius: 16px; padding: 26px 20px 22px; }
 .hero-emoji { font-size: 30px; }
+.streak-pill { display: inline-flex; align-items: center; gap: 6px; background: #2a2116; border: 1px solid #4a3a1f; color: #FF9A3A; border-radius: 999px; padding: 5px 14px; font-size: 14px; font-weight: 700; margin: 8px 0 2px; }
+.streak-pill .sp-label { color: #A39B87; font-weight: 500; font-size: 12px; }
+.hc-fire { color: #FF9A3A; font-weight: 700; }
 .hero-number { font-family: 'Bebas Neue', sans-serif; font-size: 84px; line-height: 1; color: var(--accent); }
 .hero-label { font-size: 13px; color: #A39B87; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
 .hero-msg { font-size: 14px; color: #C9C2AC; margin-top: 14px; font-style: italic; }
@@ -261,6 +264,7 @@ body {
 
   <div class="hero">
     <div class="hero-emoji" id="heroEmoji">🏋️</div>
+    <div class="streak-pill hidden" id="streakPill">🔥 <span id="streakPillNum">0</span> <span class="sp-label">em sequência</span></div>
     <div class="hero-number" id="streakNum">0</div>
     <div class="hero-label" id="heroLabel">dias seguidos</div>
     <div class="chain" id="chain"></div>
@@ -272,7 +276,7 @@ body {
     <div class="stat"><div class="stat-num" id="statTotalMonth">0</div><div class="stat-label">No mês</div></div>
     <div class="stat"><div class="stat-num" id="statBest">0</div><div class="stat-label">Melhor sequência</div></div>
     <div class="stat"><div class="stat-num" id="statWeek">0/5</div><div class="stat-label">Semana atual</div></div>
-    <div class="stat"><div class="stat-num" id="statTotalAll">0</div><div class="stat-label">Total geral</div></div>
+    <div class="stat"><div class="stat-num" id="statTotalAll">0</div><div class="stat-label" id="statTotalAllLabel">Total geral</div></div>
   </div>
 
   <div class="card">
@@ -632,6 +636,15 @@ function abstainStreak(chal){
   return s;
 }
 function displayStreak(chal){ return chal.mode==='abstain' ? abstainStreak(chal) : calcCurrentStreak(chal.dates); }
+function heroCount(chal){ return chal.mode==='abstain' ? abstainStreak(chal) : totalDone(chal.dates); }
+function totalMessage(total, unit){
+  if (total===0) return 'Marque um dia para começar a contar.';
+  if (total===1) return '1 dia registrado. Todo começo conta.';
+  if (total<10) return `${total} ${unit} até agora. Continue somando.`;
+  if (total<30) return `${total} ${unit}! O hábito está tomando forma.`;
+  if (total<100) return `${total} ${unit}. Que consistência.`;
+  return `${total} ${unit}. Isso é dedicação de verdade.`;
+}
 function abstainMessage(streak, unit){
   if (streak<=0) return 'Recaída registrada hoje. Amanhã a contagem recomeça — você consegue.';
   if (streak===1) return 'Dia 1. O começo é o mais difícil, e você já está nele.';
@@ -675,11 +688,13 @@ function renderHome() {
     .sort((a,b) => (order[a.st.k]-order[b.st.k]) || (displayStreak(b.c)-displayStreak(a.c)));
 
   sorted.forEach(({c, st}) => {
-    const streak = displayStreak(c);
+    const cnt = heroCount(c);
+    const cs = c.mode==='abstain' ? 0 : calcCurrentStreak(c.dates);
+    const fire = cs>0 ? `<span class="hc-fire">🔥 ${cs}</span> · ` : '';
     const card = document.createElement('div'); card.className = 'home-card';
     card.innerHTML = `
       <div class="hc-emoji" style="background:${c.color}22;">${c.emoji}</div>
-      <div class="hc-body"><div class="hc-title">${esc(c.title)}</div><div class="hc-sub">${streak} • ${esc(c.unit)}</div></div>
+      <div class="hc-body"><div class="hc-title">${esc(c.title)}</div><div class="hc-sub">${fire}${cnt} • ${esc(c.unit)}</div></div>
       <span class="hc-badge ${st.cls}">${st.label}</span>`;
     card.addEventListener('click', () => openDetail(c.id));
     list.appendChild(card);
@@ -698,10 +713,14 @@ function renderApp() {
   document.getElementById('avatarBtn').textContent = initial;
 
   document.getElementById('heroEmoji').textContent = chal.emoji;
+  const total = totalDone(chal.dates);
   const streak = displayStreak(chal);
-  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('streakNum').textContent = abst ? streak : total;
   document.getElementById('heroLabel').textContent = chal.unit;
-  document.getElementById('heroMsg').textContent = abst ? abstainMessage(streak, chal.unit) : motivationalMessage(streak, chal.unit);
+  document.getElementById('heroMsg').textContent = abst ? abstainMessage(streak, chal.unit) : totalMessage(total, chal.unit);
+  const pill = document.getElementById('streakPill');
+  pill.classList.toggle('hidden', abst);
+  document.getElementById('streakPillNum').textContent = streak;
 
   const chain = document.getElementById('chain'); chain.innerHTML = '';
   const relSet = new Set(chal.relapses||[]);
@@ -903,7 +922,7 @@ function openChalSheet() {
   const list=document.getElementById('sheetChalList'); list.innerHTML='';
   state.challenges.forEach(c=>{
     const it=document.createElement('div'); it.className='chal-item'+(c.id===state.activeId?' active':'');
-    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${displayStreak(c)} • ${esc(c.unit)}</div></div><button class="ti-del" title="Excluir">🗑</button>`;
+    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${heroCount(c)} • ${esc(c.unit)}</div></div><button class="ti-del" title="Excluir">🗑</button>`;
     it.querySelector('.ti-body').addEventListener('click',()=>{ closeOverlay('chalSheet'); openDetail(c.id); });
     it.querySelector('.ti-emoji').addEventListener('click',()=>{ closeOverlay('chalSheet'); openDetail(c.id); });
     it.querySelector('.ti-del').addEventListener('click',(ev)=>{ ev.stopPropagation(); requestDeleteChallenge(c.id); });
