@@ -59,6 +59,17 @@ body {
 .streak-pill { display: inline-flex; align-items: center; gap: 6px; background: #2a2116; border: 1px solid #4a3a1f; color: #FF9A3A; border-radius: 999px; padding: 5px 14px; font-size: 14px; font-weight: 700; margin: 8px 0 2px; }
 .streak-pill .sp-label { color: #A39B87; font-weight: 500; font-size: 12px; }
 .hc-fire { color: #FF9A3A; font-weight: 700; }
+.daily-prog { margin: 4px auto 16px; max-width: 260px; }
+.dp-bar { height: 10px; background: #16140F; border-radius: 5px; overflow: hidden; }
+.dp-fill { height: 100%; background: var(--accent); border-radius: 5px; transition: width .3s; }
+.dp-label { font-size: 12px; color: #A39B87; margin-top: 6px; }
+.count-controls { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.cc-btn { width: 46px; height: 46px; border-radius: 50%; border: 1px solid #4A4530; background: #211E17; color: #F5F0E1; font-size: 20px; cursor: pointer; }
+.cc-btn:hover { background: #35311F; }
+.cc-add { min-width: 120px; height: 52px; border-radius: 999px; border: none; background: var(--accent); color: var(--accent-ink); font-size: 18px; font-weight: 700; cursor: pointer; padding: 0 22px; }
+.cc-add:active { transform: scale(.97); }
+.day-count { position: absolute; bottom: 3px; left: 0; right: 0; text-align: center; font-size: 9px; font-weight: 700; color: #16140F; }
+.day.goalmet { box-shadow: inset 0 0 0 2px #16140F; }
 .hero-number { font-family: 'Bebas Neue', sans-serif; font-size: 84px; line-height: 1; color: var(--accent); }
 .hero-label { font-size: 13px; color: #A39B87; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
 .hero-msg { font-size: 14px; color: #C9C2AC; margin-top: 14px; font-style: italic; }
@@ -269,7 +280,13 @@ body {
     <div class="hero-label" id="heroLabel">dias seguidos</div>
     <div class="chain" id="chain"></div>
     <div class="hero-msg" id="heroMsg"></div>
-    <div><button class="mark-today" id="markToday">Marcar hoje</button></div>
+    <div class="daily-prog hidden" id="dailyProg"><div class="dp-bar"><div class="dp-fill" id="dpFill"></div></div><div class="dp-label" id="dpLabel"></div></div>
+    <div id="markWrap"><button class="mark-today" id="markToday">Marcar hoje</button></div>
+    <div id="countControls" class="count-controls hidden">
+      <button class="cc-btn" id="ccMinus">−</button>
+      <button class="cc-add" id="ccPlus">+1</button>
+      <button class="cc-btn" id="ccSet" title="Definir quantidade">✎</button>
+    </div>
   </div>
 
   <div class="stats">
@@ -365,6 +382,10 @@ body {
       <label class="mini-label">Categorias — pode marcar mais de uma</label>
       <div class="picker-grid" id="dsCatGrid"></div>
     </div>
+    <div id="dsCountWrap" class="hidden" style="margin-bottom:14px;">
+      <label class="mini-label" id="dsCountLabel">Quantidade neste dia</label>
+      <input type="number" id="dsCount" min="0" style="width:100%;background:#16140F;border:1px solid #4A4530;color:#F5F0E1;border-radius:8px;padding:10px 12px;font-size:14px;">
+    </div>
     <div class="field" style="margin-top:14px;">
       <label>Diário do dia (opcional)</label>
       <textarea id="dsNote" rows="4" placeholder="Como foi? Registre aqui o que quiser lembrar..."></textarea>
@@ -447,6 +468,7 @@ body {
       <div class="field"><label>Tipo de contagem</label>
         <select id="cf_mode">
           <option value="check">Marco cada dia que cumpri (treino, leitura...)</option>
+          <option value="count">Contador diário — meta de vezes por dia (água, etc.)</option>
           <option value="abstain">Contagem automática — largar um vício</option>
         </select>
         <div class="field-hint">"Automática" conta os dias sozinho e você só registra quando recai (parar de fumar, beber, etc.). Sem categorias.</div>
@@ -455,6 +477,14 @@ body {
         <label>Você está assim desde</label>
         <input type="date" id="cf_since">
         <div class="field-hint">Se largou faz tempo, coloque a data real — a contagem já começa daí (retroativo).</div>
+      </div>
+      <div class="field hidden" id="cf_countField">
+        <label>Meta por dia e unidade</label>
+        <div class="field row2" style="margin-bottom:0;">
+          <div><input type="number" id="cf_target" min="1" placeholder="Meta (ex.: 8)"></div>
+          <div><input type="text" id="cf_dunit" placeholder="Unidade (ex.: copos)"></div>
+        </div>
+        <div class="field-hint">Você soma com "+1" ao longo do dia até bater a meta.</div>
       </div>
 
       <hr class="divider">
@@ -527,7 +557,7 @@ const TEMPLATES = [
   { title:'Academia',   emoji:'🏋️', color:'#E3B23C', unit:'dias treinando', goal:5, cats:GYM_CATS.map(c=>({...c})), modules:['body'] },
   { title:'Leitura',    emoji:'📚', color:'#5B8DEF', unit:'dias lendo',      goal:7 },
   { title:'Meditação',  emoji:'🧘', color:'#A78BFA', unit:'dias meditando',  goal:7 },
-  { title:'Beber água', emoji:'💧', color:'#4FA8A0', unit:'dias na meta',    goal:7 },
+  { title:'Beber água', emoji:'💧', color:'#4FA8A0', unit:'dias na meta',    goal:7, mode:'count', dailyTarget:8, dailyUnit:'copos' },
   { title:'Corrida',    emoji:'🏃', color:'#FF5D3A', unit:'dias correndo',   goal:4 },
   { title:'Estudar',    emoji:'💡', color:'#6FA85E', unit:'dias estudando',  goal:6 },
   { title:'Escrever',   emoji:'✍️', color:'#E8896B', unit:'dias escrevendo', goal:5 },
@@ -574,13 +604,17 @@ function makeChallenge(t) {
   (t.modules || []).forEach(m => { if (m === 'body') modules.push({ type:'body' }); });
   (t.metrics || []).forEach(m => modules.push({ type:'metric', id: uid(), name: m.name, unit: m.unit }));
   const abstain = t.mode === 'abstain';
+  const count = t.mode === 'count';
+  const mode = abstain ? 'abstain' : count ? 'count' : 'check';
   return {
     id: uid(), title: t.title || 'Meu desafio', emoji: t.emoji || '🔥', color: t.color || '#E3B23C',
     unit: t.unit || 'dias seguidos', weeklyGoal: t.goal || 5,
-    mode: abstain ? 'abstain' : 'check',
+    mode,
     abstainStart: abstain ? (t.since || today()) : null,
     relapses: [],
-    categories: (abstain || !(t.cats && t.cats.length)) ? [] : t.cats,
+    dailyTarget: count ? (parseInt(t.dailyTarget,10) || 1) : null,
+    dailyUnit: count ? (t.dailyUnit || 'vezes') : null,
+    categories: (mode!=='check' || !(t.cats && t.cats.length)) ? [] : t.cats,
     modules, dates:{}, notes:{}, measurements:[], metricLogs:{}, createdAt: today()
   };
 }
@@ -636,7 +670,14 @@ function abstainStreak(chal){
   return s;
 }
 function displayStreak(chal){ return chal.mode==='abstain' ? abstainStreak(chal) : calcCurrentStreak(chal.dates); }
-function heroCount(chal){ return chal.mode==='abstain' ? abstainStreak(chal) : totalDone(chal.dates); }
+function heroCount(chal){ if (chal.mode==='abstain') return abstainStreak(chal); if (chal.mode==='count') return chalCount(chal,todayKey); return totalDone(chal.dates); }
+function chalCount(chal,key){ const v=chal.dates[key]; return typeof v==='number' ? v : (v?1:0); }
+function addCount(chal,delta){ const n=Math.max(0, chalCount(chal,todayKey)+delta); if(n===0) delete chal.dates[todayKey]; else chal.dates[todayKey]=n; save(); renderApp(); }
+function countMessage(count, target, unit){
+  if (count>=target) return `Meta de hoje batida! ${count} ${unit} 🎉`;
+  if (count===0) return `Meta de hoje: ${target} ${unit}. Bora começar.`;
+  return `${count} de ${target} ${unit} hoje — faltam ${target-count}.`;
+}
 function totalMessage(total, unit){
   if (total===0) return 'Marque um dia para começar a contar.';
   if (total===1) return '1 dia registrado. Todo começo conta.';
@@ -658,8 +699,10 @@ function toggleRelapse(chal, key, on){
   if (on) chal.relapses.push(key);
   ensureAbstain(chal);
 }
+function satisfiedToday(c){ if(c.mode==='count') return chalCount(c,todayKey)>=c.dailyTarget; return isDone(c,todayKey); }
 function challengeStatus(chal) {
   if (chal.mode==='abstain') { ensureAbstain(chal); return isDone(chal,todayKey) ? { k:'done', label:'Limpo hoje', cls:'st-done' } : { k:'pending', label:'Recaída hoje', cls:'st-broken' }; }
+  if (chal.mode==='count') { const c=chalCount(chal,todayKey); if(c>=chal.dailyTarget) return { k:'done', label:'Meta batida', cls:'st-done' }; if(c>0) return { k:'pending', label:`${c}/${chal.dailyTarget} hoje`, cls:'st-pending' }; return { k:'pending', label:'Pendente hoje', cls:'st-pending' }; }
   if (isDone(chal, todayKey)) return { k:'done', label:'Feito hoje', cls:'st-done' };
   const streak = calcCurrentStreak(chal.dates);
   if (streak>0) return { k:'pending', label:'Pendente hoje', cls:'st-pending' };
@@ -674,7 +717,7 @@ function renderHome() {
   document.getElementById('homeAvatar').textContent = initial;
 
   state.challenges.forEach(ensureAbstain);
-  const pending = state.challenges.filter(c => !isDone(c, todayKey));
+  const pending = state.challenges.filter(c => !satisfiedToday(c));
   const alertEl = document.getElementById('homeAlert');
   if (!state.challenges.length) { alertEl.innerHTML = ''; }
   else if (pending.length === 0) { alertEl.innerHTML = `<div class="alert ok">🔥 Tudo em dia hoje! Você marcou todos os ${state.challenges.length} desafios.</div>`; }
@@ -688,13 +731,13 @@ function renderHome() {
     .sort((a,b) => (order[a.st.k]-order[b.st.k]) || (displayStreak(b.c)-displayStreak(a.c)));
 
   sorted.forEach(({c, st}) => {
-    const cnt = heroCount(c);
     const cs = c.mode==='abstain' ? 0 : calcCurrentStreak(c.dates);
     const fire = cs>0 ? `<span class="hc-fire">🔥 ${cs}</span> · ` : '';
+    const subText = c.mode==='count' ? `${chalCount(c,todayKey)}/${c.dailyTarget} ${esc(c.dailyUnit)} hoje` : `${heroCount(c)} • ${esc(c.unit)}`;
     const card = document.createElement('div'); card.className = 'home-card';
     card.innerHTML = `
       <div class="hc-emoji" style="background:${c.color}22;">${c.emoji}</div>
-      <div class="hc-body"><div class="hc-title">${esc(c.title)}</div><div class="hc-sub">${fire}${cnt} • ${esc(c.unit)}</div></div>
+      <div class="hc-body"><div class="hc-title">${esc(c.title)}</div><div class="hc-sub">${fire}${subText}</div></div>
       <span class="hc-badge ${st.cls}">${st.label}</span>`;
     card.addEventListener('click', () => openDetail(c.id));
     list.appendChild(card);
@@ -713,14 +756,26 @@ function renderApp() {
   document.getElementById('avatarBtn').textContent = initial;
 
   document.getElementById('heroEmoji').textContent = chal.emoji;
+  const cnt = chal.mode==='count';
   const total = totalDone(chal.dates);
   const streak = displayStreak(chal);
-  document.getElementById('streakNum').textContent = abst ? streak : total;
-  document.getElementById('heroLabel').textContent = chal.unit;
-  document.getElementById('heroMsg').textContent = abst ? abstainMessage(streak, chal.unit) : totalMessage(total, chal.unit);
+  const todayCount = cnt ? chalCount(chal, todayKey) : 0;
+  document.getElementById('streakNum').textContent = cnt ? todayCount : (abst ? streak : total);
+  document.getElementById('heroLabel').textContent = cnt ? `${chal.dailyUnit} hoje` : chal.unit;
+  document.getElementById('heroMsg').textContent = cnt ? countMessage(todayCount, chal.dailyTarget, chal.dailyUnit) : (abst ? abstainMessage(streak, chal.unit) : totalMessage(total, chal.unit));
   const pill = document.getElementById('streakPill');
   pill.classList.toggle('hidden', abst);
-  document.getElementById('streakPillNum').textContent = streak;
+  document.getElementById('streakPillNum').textContent = cnt ? calcCurrentStreak(chal.dates) : streak;
+  // daily-count controls
+  document.getElementById('markWrap').classList.toggle('hidden', cnt);
+  document.getElementById('countControls').classList.toggle('hidden', !cnt);
+  const dp = document.getElementById('dailyProg');
+  dp.classList.toggle('hidden', !cnt);
+  if (cnt) {
+    document.getElementById('ccPlus').textContent = '+1 ' + chal.dailyUnit;
+    document.getElementById('dpFill').style.width = Math.min(100, Math.round((todayCount/chal.dailyTarget)*100)) + '%';
+    document.getElementById('dpLabel').textContent = `${todayCount} / ${chal.dailyTarget} ${chal.dailyUnit} hoje`;
+  }
 
   const chain = document.getElementById('chain'); chain.innerHTML = '';
   const relSet = new Set(chal.relapses||[]);
@@ -772,6 +827,7 @@ function renderCalendar(chal) {
     if (key>todayKey) cell.classList.add('future');
     if (chal.mode==='abstain' && (chal.relapses||[]).includes(key)) cell.classList.add('relapse');
     cell.textContent=d;
+    if (chal.mode==='count'){ const cc=chalCount(chal,key); if(cc>0){ const b=document.createElement('span'); b.className='day-count'; b.textContent=cc; cell.appendChild(b); if(cc>=chal.dailyTarget) cell.classList.add('goalmet'); } }
     const keys=catList(chal.dates[key]);
     if (keys.length && chal.categories && chal.categories.length) {
       const wrap=document.createElement('div'); wrap.className='day-dots';
@@ -844,13 +900,16 @@ function openDaySheet(key) {
   pendingCats=new Set(catList(chal.dates[key])); pendingDone=isDone(chal,key);
   pendingRelapse = (chal.relapses||[]).includes(key);
   document.getElementById('dsDate').textContent=fmtDate(key);
-  const hasCats = !pendingAbstain && chal.categories && chal.categories.length;
+  const hasCats = chal.mode==='check' && chal.categories && chal.categories.length;
+  const isCount = chal.mode==='count';
   document.getElementById('dsCatWrap').classList.toggle('hidden', !hasCats);
-  document.getElementById('dsDoneWrap').classList.toggle('hidden', hasCats);
+  document.getElementById('dsCountWrap').classList.toggle('hidden', !isCount);
+  document.getElementById('dsDoneWrap').classList.toggle('hidden', hasCats || isCount);
   if (hasCats) {
     const grid=document.getElementById('dsCatGrid'); grid.innerHTML='';
     chal.categories.forEach(g=>{ const b=document.createElement('button'); b.className='picker-btn'+(pendingCats.has(g.key)?' sel':''); b.innerHTML=`<span class="legend-dot" style="background:${g.color}"></span>${esc(g.label)}<span class="pk-check">✓</span>`; b.addEventListener('click',()=>{ if(pendingCats.has(g.key))pendingCats.delete(g.key); else pendingCats.add(g.key); b.classList.toggle('sel'); }); grid.appendChild(b); });
-  } else if (pendingAbstain) updateRelapseToggle();
+  } else if (isCount) { document.getElementById('dsCountLabel').textContent = `Quantidade (${chal.dailyUnit})`; document.getElementById('dsCount').value = chalCount(chal,key) || ''; }
+  else if (pendingAbstain) updateRelapseToggle();
   else updateDoneToggle();
   document.getElementById('dsNote').value = (chal.notes && chal.notes[key]) || '';
   openOverlay('daySheet');
@@ -860,9 +919,10 @@ function updateRelapseToggle() { const b=document.getElementById('dsDoneToggle')
 document.getElementById('dsDoneToggle').addEventListener('click', () => { if (pendingAbstain) { pendingRelapse=!pendingRelapse; updateRelapseToggle(); } else { pendingDone=!pendingDone; updateDoneToggle(); } });
 document.getElementById('dsCancel').addEventListener('click', () => closeOverlay('daySheet'));
 document.getElementById('dsSave').addEventListener('click', () => {
-  const chal=activeChal(), key=pendingKey; const hasCats=!pendingAbstain && chal.categories && chal.categories.length;
-  if (pendingAbstain) { toggleRelapse(chal, key, pendingRelapse); }
-  else if (hasCats) { if (pendingCats.size===0) delete chal.dates[key]; else chal.dates[key]=Array.from(pendingCats); }
+  const chal=activeChal(), key=pendingKey;
+  if (chal.mode==='abstain') { toggleRelapse(chal, key, pendingRelapse); }
+  else if (chal.mode==='count') { const n=Math.max(0, parseInt(document.getElementById('dsCount').value,10)||0); if(n===0) delete chal.dates[key]; else chal.dates[key]=n; }
+  else if (chal.categories && chal.categories.length) { if (pendingCats.size===0) delete chal.dates[key]; else chal.dates[key]=Array.from(pendingCats); }
   else { if (pendingDone) chal.dates[key]=true; else delete chal.dates[key]; }
   const note=document.getElementById('dsNote').value.trim();
   chal.notes = chal.notes || {};
@@ -880,6 +940,9 @@ document.getElementById('sinceInput').addEventListener('change', (e)=>{
   if (v>todayKey) v=todayKey;
   chal.abstainStart=v; ensureAbstain(chal); save(); renderApp();
 });
+document.getElementById('ccPlus').addEventListener('click', ()=>addCount(activeChal(), +1));
+document.getElementById('ccMinus').addEventListener('click', ()=>addCount(activeChal(), -1));
+document.getElementById('ccSet').addEventListener('click', ()=>openDaySheet(todayKey));
 document.getElementById('detailBack').addEventListener('click', ()=>route());
 
 /* =================== OVERLAYS =================== */
@@ -984,6 +1047,8 @@ document.getElementById('startCustom').addEventListener('click', ()=>{
   document.getElementById('cf_mode').value='check';
   document.getElementById('cf_sinceField').classList.add('hidden');
   document.getElementById('cf_since').value='';
+  document.getElementById('cf_countField').classList.add('hidden');
+  document.getElementById('cf_target').value=''; document.getElementById('cf_dunit').value='';
   document.getElementById('cf_mName').value=''; document.getElementById('cf_mUnit').value='';
   renderMetricChips();
   buildEmojiRow(); buildColorRow();
@@ -992,7 +1057,7 @@ document.getElementById('startCustom').addEventListener('click', ()=>{
 });
 document.getElementById('createBack').addEventListener('click', ()=>{ document.getElementById('createStep2').classList.add('hidden'); document.getElementById('createStep1').classList.remove('hidden'); });
 document.getElementById('cf_useCats').addEventListener('change', (e)=>document.getElementById('cf_catsField').classList.toggle('hidden', !e.target.checked));
-document.getElementById('cf_mode').addEventListener('change', (e)=>{ const ab=e.target.value==='abstain'; document.getElementById('cf_sinceField').classList.toggle('hidden', !ab); if(ab && !document.getElementById('cf_since').value) document.getElementById('cf_since').value=todayKey; });
+document.getElementById('cf_mode').addEventListener('change', (e)=>{ const v=e.target.value; document.getElementById('cf_sinceField').classList.toggle('hidden', v!=='abstain'); document.getElementById('cf_countField').classList.toggle('hidden', v!=='count'); if(v==='abstain' && !document.getElementById('cf_since').value) document.getElementById('cf_since').value=todayKey; });
 function buildEmojiRow(){ const row=document.getElementById('cf_emojiRow'); row.innerHTML=''; EMOJIS.forEach(em=>{ const b=document.createElement('button'); b.className='emoji-opt'+(em===cf.emoji?' sel':''); b.textContent=em; b.addEventListener('click',()=>{ cf.emoji=em; buildEmojiRow(); }); row.appendChild(b); }); }
 function buildColorRow(){ const row=document.getElementById('cf_colorRow'); row.innerHTML=''; PALETTE.forEach(col=>{ const b=document.createElement('button'); b.className='color-opt'+(col===cf.color?' sel':''); b.style.background=col; b.addEventListener('click',()=>{ cf.color=col; setAccent(col); buildColorRow(); }); row.appendChild(b); }); }
 function renderMetricChips(){ const el=document.getElementById('cf_metricList'); el.innerHTML=''; cfMetrics.forEach((m,i)=>{ const chip=document.createElement('span'); chip.className='chip'; chip.innerHTML=`${esc(m.name)}${m.unit?` <span style="color:#6E6752">(${esc(m.unit)})</span>`:''} <button>×</button>`; chip.querySelector('button').addEventListener('click',()=>{ cfMetrics.splice(i,1); renderMetricChips(); }); el.appendChild(chip); }); }
@@ -1008,7 +1073,9 @@ document.getElementById('createSave').addEventListener('click', ()=>{
   const modules=[]; if (document.getElementById('cf_useBody').checked) modules.push('body');
   const mode=document.getElementById('cf_mode').value;
   const since = mode==='abstain' ? (document.getElementById('cf_since').value || todayKey) : undefined;
-  addChallenge({ title, emoji:cf.emoji, color:cf.color, unit, goal, cats, modules, metrics: cfMetrics.slice(), mode, since });
+  const dailyTarget = mode==='count' ? (parseInt(document.getElementById('cf_target').value,10)||1) : undefined;
+  const dailyUnit = mode==='count' ? (document.getElementById('cf_dunit').value.trim()||'vezes') : undefined;
+  addChallenge({ title, emoji:cf.emoji, color:cf.color, unit, goal, cats, modules, metrics: cfMetrics.slice(), mode, since, dailyTarget, dailyUnit });
   closeOverlay('createSheet'); openDetail(state.activeId);
 });
 
