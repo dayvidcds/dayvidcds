@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#16140F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Constância">
+<link rel="apple-touch-icon" id="appleIcon">
+<title>Constância — Desafios</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap');
+:root { --accent: #E3B23C; --accent-ink: #16140F; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #16140F; color: #F5F0E1; font-family: 'Inter', sans-serif;
+  padding: env(safe-area-inset-top) 16px calc(48px + env(safe-area-inset-bottom));
+  min-height: 100vh; -webkit-tap-highlight-color: transparent;
+}
+.wrap { max-width: 640px; margin: 0 auto; padding-top: 18px; }
+.hidden { display: none !important; }
+
+/* topbar */
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+.tb-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.chal-chip { display: flex; align-items: center; gap: 8px; background: #211E17; border: 1px solid #35311F; border-radius: 999px; padding: 7px 14px 7px 10px; cursor: pointer; min-width: 0; }
+.chal-chip:hover { border-color: #4A4530; }
+.chal-emoji { font-size: 20px; line-height: 1; }
+.chal-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
+.chal-caret { color: #6E6752; font-size: 11px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 20px; cursor: pointer; flex-shrink: 0; border: none; }
+.icon-btn { background: none; border: 1px solid #4A4530; color: #F5F0E1; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; font-size: 18px; line-height: 1; flex-shrink: 0; }
+.icon-btn:hover { background: #35311F; }
+
+/* home */
+.home-greet-sm { font-size: 13px; color: #A39B87; }
+.home-greet { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 1px; }
+.alert { border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; font-size: 14px; }
+.alert.warn { background: rgba(255,93,58,0.10); border: 1px solid #6b2a1f; color: #FFB4A2; }
+.alert.ok { background: rgba(111,168,94,0.10); border: 1px solid #3c5a30; color: #B7D9A8; }
+.section-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #6E6752; margin: 8px 0 10px; }
+.home-card { display: flex; align-items: center; gap: 14px; background: #211E17; border: 1px solid #35311F; border-radius: 16px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
+.home-card:hover { border-color: #4A4530; }
+.hc-emoji { width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+.hc-body { flex: 1; min-width: 0; }
+.hc-title { font-size: 15px; font-weight: 600; }
+.hc-sub { font-size: 12px; color: #A39B87; margin-top: 2px; }
+.hc-badge { font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; }
+.st-done { background: rgba(111,168,94,0.15); color: #8FCB78; }
+.st-pending { background: rgba(227,178,60,0.15); color: #E3B23C; }
+.st-broken { background: rgba(255,93,58,0.15); color: #FF7A5C; }
+.st-new { background: rgba(120,144,255,0.12); color: #93A6FF; }
+
+/* generic */
+.hero { margin: 0 0 20px; text-align: center; background: #211E17; border: 1px solid #35311F; border-radius: 16px; padding: 26px 20px 22px; }
+.hero-emoji { font-size: 30px; }
+.hero-number { font-family: 'Bebas Neue', sans-serif; font-size: 84px; line-height: 1; color: var(--accent); }
+.hero-label { font-size: 13px; color: #A39B87; letter-spacing: 1px; text-transform: uppercase; margin-top: 4px; }
+.hero-msg { font-size: 14px; color: #C9C2AC; margin-top: 14px; font-style: italic; }
+.chain { display: flex; justify-content: center; align-items: center; gap: 6px; margin-top: 20px; flex-wrap: wrap; }
+.link { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #4A4530; display: flex; align-items: center; justify-content: center; }
+.link.on { background: var(--accent); border-color: var(--accent); }
+.link.on::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #16140F; }
+.link.today { border-color: #FF5D3A; }
+.mark-today { margin-top: 18px; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 999px; padding: 11px 22px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.mark-today.done { background: transparent; color: #A39B87; border: 1px solid #4A4530; }
+.mark-today:active { transform: scale(0.97); }
+
+.stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+@media (min-width: 480px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+.stat { background: #211E17; border: 1px solid #35311F; border-radius: 12px; padding: 14px 12px; text-align: center; }
+.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: #F5F0E1; }
+.stat-label { font-size: 11px; color: #A39B87; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.card { background: #211E17; border: 1px solid #35311F; border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; gap: 10px; }
+.card-title { font-size: 15px; font-weight: 600; }
+.nav-btn { background: none; border: 1px solid #4A4530; color: #F5F0E1; min-width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 8px; }
+.nav-btn:hover { background: #35311F; }
+.month-label { font-size: 14px; color: #C9C2AC; min-width: 130px; text-align: center; }
+.weekdays, .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.weekdays div { text-align: center; font-size: 11px; color: #6E6752; text-transform: uppercase; padding-bottom: 6px; }
+.day { position: relative; aspect-ratio: 1; border-radius: 10px; border: 1px solid #35311F; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; color: #C9C2AC; background: #191712; user-select: none; }
+.day:hover { border-color: #6E6752; }
+.day.empty { visibility: hidden; cursor: default; }
+.day.future { opacity: 0.35; cursor: not-allowed; }
+.day.done { background: var(--accent); border-color: var(--accent); color: #16140F; font-weight: 700; }
+.day.today { border-color: #FF5D3A; border-width: 2px; }
+.day-dots { position: absolute; bottom: 4px; left: 0; right: 0; display: flex; justify-content: center; gap: 2px; }
+.day-dot { width: 5px; height: 5px; border-radius: 50%; }
+.day-note { position: absolute; top: 2px; right: 4px; font-size: 9px; line-height: 1; color: var(--accent); opacity: 0.85; }
+.day.done .day-note { color: #16140F; opacity: 0.7; }
+
+.goal-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.goal-row label { font-size: 13px; color: #A39B87; }
+.goal-row input { width: 56px; background: #16140F; border: 1px solid #4A4530; color: #F5F0E1; border-radius: 8px; padding: 6px 8px; font-size: 14px; text-align: center; }
+.week-progress { margin-top: 12px; height: 8px; background: #16140F; border-radius: 4px; overflow: hidden; }
+.week-progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.3s; }
+.foot-note { text-align: center; font-size: 12px; color: #6E6752; margin-top: 24px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #35311F; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #A39B87; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+.chart { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 130px; padding-top: 10px; }
+.chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+.chart-val { font-size: 12px; color: #C9C2AC; margin-bottom: 4px; }
+.chart-bar { width: 60%; background: #4A4530; border-radius: 6px 6px 0 0; transition: height 0.3s; min-height: 3px; }
+.chart-bar.current { background: var(--accent); }
+.chart-label { font-size: 11px; color: #6E6752; margin-top: 8px; text-transform: uppercase; }
+
+.add-btn { background: var(--accent); color: var(--accent-ink); border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.add-btn:hover { opacity: 0.9; }
+.ghost-btn { background: none; border: 1px solid #4A4530; color: #F5F0E1; border-radius: 10px; padding: 11px; font-size: 14px; cursor: pointer; width: 100%; }
+.ghost-btn:hover { background: #35311F; }
+.danger-btn { background: none; border: 1px solid #6b2a1f; color: #FF5D3A; border-radius: 10px; padding: 11px; font-size: 14px; cursor: pointer; width: 100%; }
+.danger-btn:hover { background: rgba(255,93,58,0.08); }
+
+/* tables (body / metrics) */
+.body-empty { text-align: center; font-size: 13px; color: #6E6752; padding: 12px 0; }
+.entry-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.entry-table th { text-align: left; color: #6E6752; font-weight: 500; text-transform: uppercase; font-size: 10px; padding: 6px 8px; border-bottom: 1px solid #35311F; }
+.entry-table td { padding: 8px; border-bottom: 1px solid #2A271C; color: #C9C2AC; }
+.entry-table tr:last-child td { border-bottom: none; }
+.delta { font-size: 10px; display: block; margin-top: 2px; }
+.delta.up { color: #6FA85E; } .delta.down { color: #FF5D3A; } .delta.flat { color: #6E6752; }
+.table-scroll { overflow-x: auto; }
+.spark { margin: 4px 0 12px; }
+
+/* overlays */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 20; }
+.overlay.show { display: flex; }
+.sheet { background: #211E17; border: 1px solid #35311F; border-radius: 18px; padding: 20px; max-width: 460px; width: 100%; max-height: 88vh; overflow-y: auto; }
+.sheet-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.sheet-sub { font-size: 13px; color: #A39B87; margin-bottom: 16px; }
+
+.picker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.picker-btn { border: 1px solid #4A4530; background: #16140F; color: #F5F0E1; border-radius: 10px; padding: 12px 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; text-align: left; }
+.picker-btn:hover { border-color: #6E6752; }
+.picker-btn.sel { border-color: var(--accent); background: #211E17; }
+.picker-btn .legend-dot { flex-shrink: 0; }
+.picker-btn .pk-check { margin-left: auto; color: var(--accent); font-weight: 700; opacity: 0; }
+.picker-btn.sel .pk-check { opacity: 1; }
+
+.tpl-list, .chal-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.tpl-item, .chal-item { display: flex; align-items: center; gap: 12px; border: 1px solid #35311F; background: #16140F; border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+.tpl-item:hover, .chal-item:hover { border-color: #6E6752; }
+.chal-item.active { border-color: var(--accent); }
+.ti-emoji { font-size: 22px; }
+.ti-body { flex: 1; min-width: 0; }
+.ti-title { font-size: 14px; font-weight: 600; }
+.ti-sub { font-size: 11px; color: #6E6752; margin-top: 1px; }
+.ti-del { background: none; border: none; color: #6E6752; font-size: 18px; cursor: pointer; padding: 4px 8px; }
+.ti-del:hover { color: #FF5D3A; }
+
+.field { margin-bottom: 12px; }
+.field.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.field label { display: block; font-size: 11px; color: #A39B87; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.3px; }
+.field input, .field select, .field textarea { width: 100%; background: #16140F; border: 1px solid #4A4530; color: #F5F0E1; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+.field textarea { resize: vertical; min-height: 74px; }
+.field-hint { font-size: 10px; color: #6E6752; margin-top: 4px; line-height: 1.4; }
+.mini-label { display: block; font-size: 11px; color: #A39B87; margin: 6px 0 6px; text-transform: uppercase; letter-spacing: 0.3px; }
+.emoji-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.emoji-opt { width: 38px; height: 38px; border-radius: 9px; border: 1px solid #35311F; background: #16140F; font-size: 19px; cursor: pointer; }
+.emoji-opt.sel { border-color: var(--accent); }
+.color-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.color-opt { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+.color-opt.sel { border-color: #F5F0E1; }
+.check-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; }
+.check-row input { width: 18px; height: 18px; margin-top: 1px; accent-color: var(--accent); flex-shrink: 0; }
+.check-row label { font-size: 13px; color: #C9C2AC; }
+.chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: #16140F; border: 1px solid #4A4530; border-radius: 999px; padding: 5px 6px 5px 12px; font-size: 12px; color: #C9C2AC; }
+.chip button { background: none; border: none; color: #6E6752; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 4px; }
+.chip button:hover { color: #FF5D3A; }
+.divider { border: none; border-top: 1px solid #35311F; margin: 14px 0; }
+.form-actions { display: flex; gap: 8px; margin-top: 16px; }
+.form-actions button { flex: 1; padding: 12px; font-size: 14px; border-radius: 10px; }
+
+.result-box { background: #16140F; border: 1px solid #4A4530; border-radius: 12px; padding: 14px; margin-top: 16px; display: none; }
+.result-box.show { display: block; }
+.result-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: #C9C2AC; }
+.result-row strong { color: var(--accent); }
+.result-note { font-size: 11px; color: #6E6752; margin-top: 8px; line-height: 1.4; }
+
+.toggle-on { background: var(--accent) !important; color: var(--accent-ink) !important; border-color: var(--accent) !important; font-weight: 700; }
+.diary-entry { border: 1px solid #35311F; background: #16140F; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; }
+.diary-entry:hover { border-color: #6E6752; }
+.de-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+.de-date { font-size: 12px; font-weight: 600; color: #C9C2AC; }
+.de-badge { font-size: 10px; padding: 1px 8px; border-radius: 999px; }
+.de-note { font-size: 13px; color: #A39B87; line-height: 1.45; white-space: pre-wrap; }
+
+/* onboarding */
+.ob-wrap { max-width: 460px; margin: 40px auto 0; text-align: center; }
+.ob-logo { font-size: 46px; }
+.ob-title { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; margin-top: 6px; }
+.ob-sub { font-size: 14px; color: #A39B87; margin: 8px 0 26px; line-height: 1.5; }
+.ob-input { width: 100%; background: #211E17; border: 1px solid #4A4530; color: #F5F0E1; border-radius: 12px; padding: 14px 16px; font-size: 16px; text-align: center; margin-bottom: 14px; }
+.ob-btn { width: 100%; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
+
+/* profile */
+.profile-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+.profile-av { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 26px; }
+.profile-name { font-size: 20px; font-weight: 700; }
+.profile-meta { font-size: 12px; color: #6E6752; margin-top: 2px; }
+.back-btn { background: none; border: none; color: var(--accent); font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px; }
+.install-hint { font-size: 12px; color: #A39B87; line-height: 1.5; background: #211E17; border: 1px solid #35311F; border-radius: 12px; padding: 14px; margin-top: 10px; }
+.install-hint b { color: #F5F0E1; }
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING -->
+<div id="onboarding" class="hidden">
+  <div class="ob-wrap">
+    <div class="ob-logo">🔥</div>
+    <div class="ob-title">CONSTÂNCIA</div>
+    <div class="ob-sub">Crie desafios e mantenha sua corrente de dias viva. Simples, seu e salvo direto no aparelho.</div>
+    <input id="obName" class="ob-input" type="text" placeholder="Como você se chama?" maxlength="24" autocomplete="off">
+    <button id="obStart" class="ob-btn">Começar</button>
+  </div>
+</div>
+
+<!-- HOME / DASHBOARD -->
+<div id="home" class="wrap hidden">
+  <div class="topbar">
+    <div class="tb-left">
+      <div>
+        <div class="home-greet-sm">Olá,</div>
+        <div class="home-greet" id="homeName">—</div>
+      </div>
+    </div>
+    <button class="avatar" id="homeAvatar">A</button>
+  </div>
+  <div id="homeAlert"></div>
+  <div class="section-label">Meus desafios</div>
+  <div id="homeList"></div>
+  <button class="ghost-btn" id="homeAddChal" style="margin-top:4px;">+ Novo desafio</button>
+</div>
+
+<!-- DETAIL -->
+<div id="app" class="wrap hidden">
+  <div class="topbar">
+    <div class="tb-left">
+      <button class="icon-btn" id="detailBack" title="Início">‹</button>
+      <div class="chal-chip" id="chalChip">
+        <span class="chal-emoji" id="chipEmoji">🏋️</span>
+        <span class="chal-name" id="chipName">Academia</span>
+        <span class="chal-caret">▼</span>
+      </div>
+    </div>
+    <button class="avatar" id="avatarBtn">A</button>
+  </div>
+
+  <div class="hero">
+    <div class="hero-emoji" id="heroEmoji">🏋️</div>
+    <div class="hero-number" id="streakNum">0</div>
+    <div class="hero-label" id="heroLabel">dias seguidos</div>
+    <div class="chain" id="chain"></div>
+    <div class="hero-msg" id="heroMsg"></div>
+    <div><button class="mark-today" id="markToday">Marcar hoje</button></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="statTotalMonth">0</div><div class="stat-label">No mês</div></div>
+    <div class="stat"><div class="stat-num" id="statBest">0</div><div class="stat-label">Melhor sequência</div></div>
+    <div class="stat"><div class="stat-num" id="statWeek">0/5</div><div class="stat-label">Semana atual</div></div>
+    <div class="stat"><div class="stat-num" id="statTotalAll">0</div><div class="stat-label">Total geral</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <button class="nav-btn" id="prevMonth">‹</button>
+      <div class="month-label" id="monthLabel"></div>
+      <button class="nav-btn" id="nextMonth">›</button>
+    </div>
+    <div class="weekdays"><div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div></div>
+    <div class="days" id="daysGrid"></div>
+    <div class="legend hidden" id="legend"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">📖 Diário</div><button class="add-btn" id="openDiary">Ver tudo</button></div>
+    <div id="diaryPreview"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="card-title">Comparativo mensal</div></div>
+    <div class="chart" id="chart6m"></div>
+  </div>
+
+  <div class="card">
+    <div class="goal-row"><label for="goalInput">Meta semanal</label><input type="number" id="goalInput" min="1" max="7" value="5"></div>
+    <div class="week-progress"><div class="week-progress-fill" id="weekFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- dynamic tracking modules -->
+  <div id="moduleCards"></div>
+
+  <div class="foot-note" id="footNote"></div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="wrap hidden">
+  <button class="back-btn" id="profileBack">‹ Voltar</button>
+  <div class="profile-head">
+    <div class="profile-av" id="profileAv">A</div>
+    <div>
+      <div class="profile-name" id="profileName">—</div>
+      <div class="profile-meta" id="profileMeta"></div>
+    </div>
+  </div>
+  <div class="field"><label>Seu nome</label><input type="text" id="editName" maxlength="24"></div>
+  <button class="ghost-btn" id="saveName">Salvar nome</button>
+
+  <div class="section-label">Meus desafios</div>
+  <div class="chal-list" id="profileChalList"></div>
+  <button class="ghost-btn" id="profileAddChal">+ Novo desafio</button>
+
+  <div class="section-label">Instalar no celular</div>
+  <button class="ghost-btn" id="installBtn">📲 Instalar app</button>
+  <div class="install-hint" id="installHint"></div>
+
+  <div class="section-label">Zona de perigo</div>
+  <button class="danger-btn" id="resetBtn">Apagar tudo e recomeçar</button>
+  <div class="field-hint" style="text-align:center;margin-top:8px;">Isso remove nome, desafios e todo o histórico deste aparelho.</div>
+</div>
+
+<!-- SHEET: switch challenge -->
+<div class="overlay" id="chalSheet">
+  <div class="sheet">
+    <div class="sheet-title">Seus desafios</div>
+    <div class="sheet-sub">Toque para abrir.</div>
+    <div class="chal-list" id="sheetChalList"></div>
+    <button class="ghost-btn" id="sheetNewChal" style="margin-top:6px;">+ Criar novo desafio</button>
+    <button class="ghost-btn" id="sheetClose" style="margin-top:8px;border:none;color:#6E6752;">Fechar</button>
+  </div>
+</div>
+
+<!-- SHEET: edit a day -->
+<div class="overlay" id="daySheet">
+  <div class="sheet" style="max-width:400px;">
+    <div class="sheet-title">Editar dia</div>
+    <div class="sheet-sub" id="dsDate"></div>
+    <div id="dsDoneWrap" class="hidden" style="margin-bottom:14px;">
+      <button class="ghost-btn" id="dsDoneToggle">Marcar como concluído</button>
+    </div>
+    <div id="dsCatWrap" class="hidden">
+      <label class="mini-label">Categorias — pode marcar mais de uma</label>
+      <div class="picker-grid" id="dsCatGrid"></div>
+    </div>
+    <div class="field" style="margin-top:14px;">
+      <label>Diário do dia (opcional)</label>
+      <textarea id="dsNote" rows="4" placeholder="Como foi? Registre aqui o que quiser lembrar..."></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="ghost-btn" id="dsCancel" style="width:auto;">Cancelar</button>
+      <button class="add-btn" id="dsSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: full diary -->
+<div class="overlay" id="diaryOverlay">
+  <div class="sheet">
+    <div class="sheet-title">📖 Diário — <span id="diaryChalName"></span></div>
+    <div class="sheet-sub" id="diarySub"></div>
+    <div id="diaryList"></div>
+    <button class="ghost-btn" id="diaryClose" style="margin-top:8px;border:none;color:#6E6752;">Fechar</button>
+  </div>
+</div>
+
+<!-- SHEET: confirm (delete / reset) -->
+<div class="overlay" id="confirmSheet">
+  <div class="sheet" style="max-width:380px;">
+    <div class="sheet-title" id="confirmTitle">Confirmar</div>
+    <div class="sheet-sub" id="confirmMsg" style="line-height:1.5;"></div>
+    <div class="form-actions">
+      <button class="ghost-btn" id="confirmCancel" style="width:auto;">Cancelar</button>
+      <button class="danger-btn" id="confirmOk" style="width:auto;">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: metric log -->
+<div class="overlay" id="metricSheet">
+  <div class="sheet" style="max-width:340px;">
+    <div class="sheet-title" id="msTitle">Registrar</div>
+    <div class="sheet-sub" id="msSub"></div>
+    <div class="field row2">
+      <div><label>Data</label><input type="date" id="ms_date"></div>
+      <div><label>Valor</label><input type="number" step="any" id="ms_value"></div>
+    </div>
+    <div class="form-actions">
+      <button class="ghost-btn" id="msCancel" style="width:auto;">Cancelar</button>
+      <button class="add-btn" id="msSave">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: create / pick challenge -->
+<div class="overlay" id="createSheet">
+  <div class="sheet">
+    <div id="createStep1">
+      <div class="sheet-title">Novo desafio</div>
+      <div class="sheet-sub">Escolha um modelo pronto ou crie do zero.</div>
+      <div class="tpl-list" id="tplList"></div>
+      <button class="ghost-btn" id="startCustom" style="margin-top:6px;">✏️ Criar meu próprio desafio</button>
+      <button class="ghost-btn" id="createClose1" style="margin-top:8px;border:none;color:#6E6752;">Cancelar</button>
+    </div>
+
+    <div id="createStepVar" class="hidden">
+      <div class="sheet-title" id="varTitle">Escolha</div>
+      <div class="sheet-sub">Escolha da lista ou personalize o seu.</div>
+      <div class="picker-grid" id="varGrid"></div>
+      <div class="field" style="margin-top:12px;"><label>Personalizado</label><input type="text" id="varCustom" placeholder="Escreva o seu..."></div>
+      <div class="form-actions">
+        <button class="ghost-btn" id="varBack" style="width:auto;">‹ Voltar</button>
+        <button class="add-btn" id="varSave">Criar desafio</button>
+      </div>
+    </div>
+
+    <div id="createStep2" class="hidden">
+      <div class="sheet-title">Criar desafio</div>
+      <div class="sheet-sub">Personalize do seu jeito.</div>
+      <div class="field"><label>Nome do desafio</label><input type="text" id="cf_title" placeholder="Ex.: Ler todo dia" maxlength="28"></div>
+      <div class="field"><label>Ícone</label><div class="emoji-row" id="cf_emojiRow"></div></div>
+      <div class="field"><label>Cor</label><div class="color-row" id="cf_colorRow"></div></div>
+      <div class="field"><label>Frase-alvo (aparece no topo)</label><input type="text" id="cf_unit" placeholder="dias seguidos" maxlength="24"><div class="field-hint">Ex.: "dias seguidos", "dias sem fumar", "dias lendo".</div></div>
+      <div class="field"><label>Meta semanal</label><input type="number" id="cf_goal" min="1" max="7" value="5"></div>
+
+      <hr class="divider">
+      <div class="check-row"><input type="checkbox" id="cf_useCats"><label for="cf_useCats">Usar categorias (escolho um ou mais tipos ao marcar o dia)</label></div>
+      <div class="field hidden" id="cf_catsField">
+        <label>Categorias (separadas por vírgula)</label>
+        <input type="text" id="cf_cats" placeholder="Ex.: Manhã, Tarde, Noite">
+        <div class="field-hint">Serve pra qualquer desafio: tipos de treino, turnos, matérias, categorias de leitura, etc.</div>
+      </div>
+
+      <hr class="divider">
+      <label class="mini-label">Módulos de acompanhamento (opcional)</label>
+      <div class="check-row"><input type="checkbox" id="cf_useBody"><label for="cf_useBody">📏 Avaliação corporal — peso, medidas e % de gordura</label></div>
+      <label class="mini-label">📊 Métricas personalizadas</label>
+      <div class="chip-list" id="cf_metricList"></div>
+      <div class="field row2" style="margin-bottom:8px;">
+        <div><input type="text" id="cf_mName" placeholder="Nome (ex.: Páginas)"></div>
+        <div><input type="text" id="cf_mUnit" placeholder="Unidade (ex.: pág.)"></div>
+      </div>
+      <button class="ghost-btn" id="cf_addMetric">+ Adicionar métrica</button>
+      <div class="field-hint" style="margin-top:6px;">Registre um número por dia e veja a evolução: páginas lidas, minutos, km, litros de água, peso, humor (1–10)...</div>
+
+      <div class="form-actions">
+        <button class="ghost-btn" id="createBack" style="width:auto;">‹ Voltar</button>
+        <button class="add-btn" id="createSave">Criar desafio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: body assessment form -->
+<div class="overlay" id="bodyOverlay">
+  <div class="sheet" style="max-width: 460px;">
+    <div class="sheet-title">Nova avaliação corporal</div>
+    <div class="sheet-sub">Só idade, peso e altura são obrigatórios.</div>
+    <div class="field row2">
+      <div><label>Data</label><input type="date" id="bf_date"></div>
+      <div><label>Sexo</label><select id="bf_sex"><option value="F">Feminino</option><option value="M">Masculino</option></select></div>
+    </div>
+    <div class="field row2"><div><label>Idade (anos)</label><input type="number" id="bf_age" min="10" max="100"></div><div><label>Peso (kg)</label><input type="number" step="0.1" id="bf_weight"></div></div>
+    <div class="field row2"><div><label>Altura (cm)</label><input type="number" step="0.1" id="bf_height"></div><div><label>Pescoço (cm)</label><input type="number" step="0.1" id="bf_neck"></div></div>
+    <div class="field row2"><div><label>Cintura (cm)</label><input type="number" step="0.1" id="bf_waist"></div><div><label>Quadril (cm)</label><input type="number" step="0.1" id="bf_hip"></div></div>
+    <div class="field row2"><div><label>Peitoral (cm)</label><input type="number" step="0.1" id="bf_chest"></div><div><label>Bíceps (cm)</label><input type="number" step="0.1" id="bf_biceps"></div></div>
+    <div class="field row2"><div><label>Antebraço (cm)</label><input type="number" step="0.1" id="bf_forearm"></div><div><label>Coxa (cm)</label><input type="number" step="0.1" id="bf_thigh"></div></div>
+    <div class="result-box" id="bodyResult"></div>
+    <div class="form-actions">
+      <button class="ghost-btn" id="bodyCancel" style="width:auto;">Fechar</button>
+      <button class="add-btn" id="bodyCalc">Calcular e salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =================== STORAGE =================== */
+const KEY = 'constancia-v1';
+let state = null;
+const uid = () => 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+const GYM_CATS = [
+  { key: 'quadriceps', label: 'Quadríceps',       color: '#FF5D3A' },
+  { key: 'superiores', label: 'Superiores',       color: '#5B8DEF' },
+  { key: 'gluteo',     label: 'Glúteo',           color: '#6FA85E' },
+  { key: 'isolado',    label: 'Isolado + cardio', color: '#A78BFA' },
+  { key: 'cardio',     label: 'Cardio',           color: '#4FA8A0' }
+];
+const PALETTE = ['#E3B23C','#FF5D3A','#5B8DEF','#6FA85E','#A78BFA','#4FA8A0','#E8896B','#D98CC9'];
+const EMOJIS = ['🔥','🏋️','📚','🧘','💧','🏃','💡','✍️','🎯','🚭','🥗','😴','🎸','💰','🧠','🙏','🚴','🧹','☀️','❄️'];
+
+const TEMPLATES = [
+  { title:'Academia',   emoji:'🏋️', color:'#E3B23C', unit:'dias treinando', goal:5, cats:GYM_CATS.map(c=>({...c})), modules:['body'] },
+  { title:'Leitura',    emoji:'📚', color:'#5B8DEF', unit:'dias lendo',      goal:7 },
+  { title:'Meditação',  emoji:'🧘', color:'#A78BFA', unit:'dias meditando',  goal:7 },
+  { title:'Beber água', emoji:'💧', color:'#4FA8A0', unit:'dias na meta',    goal:7 },
+  { title:'Corrida',    emoji:'🏃', color:'#FF5D3A', unit:'dias correndo',   goal:4 },
+  { title:'Estudar',    emoji:'💡', color:'#6FA85E', unit:'dias estudando',  goal:6 },
+  { title:'Escrever',   emoji:'✍️', color:'#E8896B', unit:'dias escrevendo', goal:5 },
+  { title:'Sem vício',  emoji:'🚭', color:'#8A8367', unit:'dias limpo',      goal:7,
+    variant:{ prompt:'Sem o quê?', prefix:'Sem ', unitPrefix:'dias sem ', options:['Cigarro','Álcool','Açúcar','Pornografia','Redes sociais','Jogos','Apostas','Refrigerante'] } }
+];
+
+function defaultState() { return { profile:{ name:'', createdAt: today() }, challenges:[], activeId:null, onboarded:false }; }
+function load() {
+  try { const raw = localStorage.getItem(KEY); if (raw) state = JSON.parse(raw); } catch(e) { state = null; }
+  if (!state || typeof state !== 'object') state = defaultState();
+  state.profile = state.profile || { name:'', createdAt: today() };
+  state.challenges = state.challenges || [];
+  state.challenges.forEach(c => { c.notes = c.notes || {}; c.modules = c.modules || (c.hasBody ? [{type:'body'}] : []); c.metricLogs = c.metricLogs || {}; c.measurements = c.measurements || {}; if (Array.isArray(c.measurements)) {} else c.measurements = c.measurements; });
+  state.challenges.forEach(c => { if (!Array.isArray(c.measurements)) c.measurements = []; });
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) { console.warn('localStorage indisponível', e); } }
+
+/* =================== DATES =================== */
+const pad = n => String(n).padStart(2,'0');
+const toKey = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function today() { return toKey(new Date()); }
+const todayKey = today();
+const fmtDate = k => k.split('-').reverse().join('/');
+const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const monthShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+let viewDate = new Date(); viewDate.setDate(1);
+
+/* =================== CHALLENGE HELPERS =================== */
+function activeChal() { return state.challenges.find(c => c.id === state.activeId) || state.challenges[0] || null; }
+function makeChallenge(t) {
+  const modules = [];
+  (t.modules || []).forEach(m => { if (m === 'body') modules.push({ type:'body' }); });
+  (t.metrics || []).forEach(m => modules.push({ type:'metric', id: uid(), name: m.name, unit: m.unit }));
+  return {
+    id: uid(), title: t.title || 'Meu desafio', emoji: t.emoji || '🔥', color: t.color || '#E3B23C',
+    unit: t.unit || 'dias seguidos', weeklyGoal: t.goal || 5,
+    categories: (t.cats && t.cats.length) ? t.cats : [],
+    modules, dates:{}, notes:{}, measurements:[], metricLogs:{}, createdAt: today()
+  };
+}
+function addChallenge(t) { const c = makeChallenge(t); state.challenges.push(c); state.activeId = c.id; save(); return c; }
+function catList(val) { if (!val || val === true) return []; return Array.isArray(val) ? val : [val]; }
+function catColorFor(chal, key) { const c = (chal.categories||[]).find(x=>x.key===key); return c ? c.color : chal.color; }
+function isDone(chal, key) { const v = chal.dates[key]; return Array.isArray(v) ? v.length>0 : !!v; }
+
+/* =================== ROUTER =================== */
+function setAccent(color) { document.documentElement.style.setProperty('--accent', color || '#E3B23C'); }
+function show(view) { ['onboarding','home','app','profile'].forEach(v => document.getElementById(v).classList.add('hidden')); document.getElementById(view).classList.remove('hidden'); }
+function route() {
+  if (!state.onboarded || !state.profile.name) { show('onboarding'); return; }
+  setAccent('#E3B23C');
+  show('home'); renderHome();
+  if (!state.challenges.length) openCreate();
+}
+function openDetail(id) { state.activeId = id; save(); const c = activeChal(); if (c) setAccent(c.color); show('app'); renderApp(); }
+
+/* =================== STATS =================== */
+function calcCurrentStreak(dates) { let d = new Date(); if (!isDoneKey(dates, toKey(d))) d.setDate(d.getDate()-1); let s=0; while (isDoneKey(dates, toKey(d))) { s++; d.setDate(d.getDate()-1); } return s; }
+function isDoneKey(dates, key) { const v = dates[key]; return Array.isArray(v) ? v.length>0 : !!v; }
+function calcBestStreak(dates) { const keys = Object.keys(dates).filter(k=>isDoneKey(dates,k)).sort(); if (!keys.length) return 0; let best=1,cur=1; for (let i=1;i<keys.length;i++){ const diff=Math.round((new Date(keys[i])-new Date(keys[i-1]))/86400000); if (diff===1){cur++;best=Math.max(best,cur);} else cur=1; } return best; }
+function getWeekStart(d) { const day=d.getDay(); const diff=(day===0?-6:1)-day; const m=new Date(d); m.setDate(d.getDate()+diff); m.setHours(0,0,0,0); return m; }
+function calcWeekCount(dates) { const start=getWeekStart(new Date()); let c=0; for(let i=0;i<7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const k=toKey(d); if(k<=todayKey && isDoneKey(dates,k)) c++; } return c; }
+function calcMonthCount(dates,y,m) { return Object.keys(dates).filter(k=>{ const [ky,km]=k.split('-').map(Number); return ky===y && (km-1)===m && isDoneKey(dates,k); }).length; }
+function totalDone(dates) { return Object.keys(dates).filter(k=>isDoneKey(dates,k)).length; }
+function motivationalMessage(streak, unit) {
+  if (streak===0) return 'Marque hoje para começar sua corrente.';
+  if (streak===1) return 'Primeiro elo da corrente. Amanhã você adiciona o segundo.';
+  if (streak<5) return `${streak} ${unit}. A consistência está se formando.`;
+  if (streak<10) return `${streak} ${unit}! Isso já é um hábito se firmando.`;
+  if (streak<21) return `${streak} ${unit}. Poucas pessoas chegam até aqui.`;
+  return `${streak} ${unit}. Constância virou identidade.`;
+}
+function challengeStatus(chal) {
+  if (isDone(chal, todayKey)) return { k:'done', label:'Feito hoje', cls:'st-done' };
+  const streak = calcCurrentStreak(chal.dates);
+  if (streak>0) return { k:'pending', label:'Pendente hoje', cls:'st-pending' };
+  if (totalDone(chal.dates)>0) return { k:'broken', label:'Corrente parada', cls:'st-broken' };
+  return { k:'new', label:'Comece hoje', cls:'st-new' };
+}
+
+/* =================== HOME =================== */
+function renderHome() {
+  const initial = (state.profile.name||'A').trim().charAt(0).toUpperCase() || 'A';
+  document.getElementById('homeName').textContent = state.profile.name || '—';
+  document.getElementById('homeAvatar').textContent = initial;
+
+  const pending = state.challenges.filter(c => !isDone(c, todayKey));
+  const alertEl = document.getElementById('homeAlert');
+  if (!state.challenges.length) { alertEl.innerHTML = ''; }
+  else if (pending.length === 0) { alertEl.innerHTML = `<div class="alert ok">🔥 Tudo em dia hoje! Você marcou todos os ${state.challenges.length} desafios.</div>`; }
+  else { alertEl.innerHTML = `<div class="alert warn">⏳ Você tem <b>${pending.length}</b> desafio(s) pendente(s) hoje.</div>`; }
+
+  const list = document.getElementById('homeList'); list.innerHTML = '';
+  if (!state.challenges.length) { list.innerHTML = '<div class="body-empty">Nenhum desafio ainda. Crie o primeiro abaixo.</div>'; return; }
+
+  const order = { pending:0, broken:1, new:2, done:3 };
+  const sorted = state.challenges.slice().map(c => ({ c, st: challengeStatus(c) }))
+    .sort((a,b) => (order[a.st.k]-order[b.st.k]) || (calcCurrentStreak(b.c.dates)-calcCurrentStreak(a.c.dates)));
+
+  sorted.forEach(({c, st}) => {
+    const streak = calcCurrentStreak(c.dates);
+    const card = document.createElement('div'); card.className = 'home-card';
+    card.innerHTML = `
+      <div class="hc-emoji" style="background:${c.color}22;">${c.emoji}</div>
+      <div class="hc-body"><div class="hc-title">${esc(c.title)}</div><div class="hc-sub">${streak} • ${esc(c.unit)}</div></div>
+      <span class="hc-badge ${st.cls}">${st.label}</span>`;
+    card.addEventListener('click', () => openDetail(c.id));
+    list.appendChild(card);
+  });
+}
+
+/* =================== DETAIL =================== */
+function renderApp() {
+  const chal = activeChal(); if (!chal) return;
+  setAccent(chal.color);
+  document.getElementById('chipEmoji').textContent = chal.emoji;
+  document.getElementById('chipName').textContent = chal.title;
+  const initial = (state.profile.name||'A').trim().charAt(0).toUpperCase() || 'A';
+  document.getElementById('avatarBtn').textContent = initial;
+
+  document.getElementById('heroEmoji').textContent = chal.emoji;
+  const streak = calcCurrentStreak(chal.dates);
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('heroLabel').textContent = chal.unit;
+  document.getElementById('heroMsg').textContent = motivationalMessage(streak, chal.unit);
+
+  const chain = document.getElementById('chain'); chain.innerHTML = '';
+  for (let i=6;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); const k=toKey(d); const el=document.createElement('div'); el.className='link'+(isDone(chal,k)?' on':'')+(k===todayKey?' today':''); chain.appendChild(el); }
+  const doneToday = isDone(chal, todayKey);
+  const btn = document.getElementById('markToday');
+  btn.textContent = doneToday ? '✓ Feito hoje — editar' : 'Marcar hoje';
+  btn.classList.toggle('done', doneToday);
+
+  const now = new Date();
+  document.getElementById('statTotalMonth').textContent = calcMonthCount(chal.dates, now.getFullYear(), now.getMonth());
+  document.getElementById('statBest').textContent = calcBestStreak(chal.dates);
+  const wc = calcWeekCount(chal.dates);
+  document.getElementById('statWeek').textContent = `${wc}/${chal.weeklyGoal}`;
+  document.getElementById('statTotalAll').textContent = totalDone(chal.dates);
+  document.getElementById('weekFill').style.width = Math.min(100, Math.round((wc/chal.weeklyGoal)*100)) + '%';
+  document.getElementById('goalInput').value = chal.weeklyGoal;
+
+  renderCalendar(chal); renderLegend(chal); renderChart(chal); renderDiaryPreview(chal); renderModules(chal);
+
+  document.getElementById('footNote').textContent = (chal.categories && chal.categories.length)
+    ? 'Toque num dia para escolher categorias (pode marcar mais de uma) e escrever no diário. Salve sem categorias para desmarcar. Tudo salvo neste aparelho.'
+    : 'Toque num dia para marcar/desmarcar e escrever no diário. Tudo salvo automaticamente neste aparelho.';
+}
+function esc(s){ return String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderCalendar(chal) {
+  document.getElementById('monthLabel').textContent = `${monthNames[viewDate.getMonth()]} ${viewDate.getFullYear()}`;
+  const grid = document.getElementById('daysGrid'); grid.innerHTML = '';
+  const year=viewDate.getFullYear(), month=viewDate.getMonth();
+  const firstDay=new Date(year,month,1).getDay(), lastDate=new Date(year,month+1,0).getDate();
+  for (let i=0;i<firstDay;i++){ const e=document.createElement('div'); e.className='day empty'; grid.appendChild(e); }
+  for (let d=1;d<=lastDate;d++){
+    const key=toKey(new Date(year,month,d));
+    const cell=document.createElement('div'); cell.className='day';
+    if (isDone(chal,key)) cell.classList.add('done');
+    if (key===todayKey) cell.classList.add('today');
+    if (key>todayKey) cell.classList.add('future');
+    cell.textContent=d;
+    const keys=catList(chal.dates[key]);
+    if (keys.length && chal.categories && chal.categories.length) {
+      const wrap=document.createElement('div'); wrap.className='day-dots';
+      keys.slice(0,4).forEach(k=>{ const dot=document.createElement('span'); dot.className='day-dot'; dot.style.background=catColorFor(chal,k); wrap.appendChild(dot); });
+      cell.appendChild(wrap);
+    }
+    if (chal.notes && chal.notes[key]) { const nm=document.createElement('span'); nm.className='day-note'; nm.textContent='✎'; cell.appendChild(nm); }
+    cell.addEventListener('click', () => openDaySheet(key));
+    grid.appendChild(cell);
+  }
+}
+function renderLegend(chal) {
+  const legend=document.getElementById('legend');
+  if (!chal.categories || !chal.categories.length) { legend.classList.add('hidden'); legend.innerHTML=''; return; }
+  legend.classList.remove('hidden'); legend.innerHTML='';
+  chal.categories.forEach(g=>{ const it=document.createElement('div'); it.className='legend-item'; it.innerHTML=`<span class="legend-dot" style="background:${g.color}"></span>${esc(g.label)}`; legend.appendChild(it); });
+}
+function renderChart(chal) {
+  const chart=document.getElementById('chart6m'); chart.innerHTML='';
+  const now=new Date(); const cols=[];
+  for (let i=5;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); cols.push({ label:monthShort[d.getMonth()], count:calcMonthCount(chal.dates,d.getFullYear(),d.getMonth()), current:d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth() }); }
+  const max=Math.max(1,...cols.map(c=>c.count));
+  cols.forEach(m=>{ const col=document.createElement('div'); col.className='chart-col'; const h=Math.max(4,Math.round((m.count/max)*100)); col.innerHTML=`<div class="chart-val">${m.count}</div><div class="chart-bar${m.current?' current':''}" style="height:${h}%"></div><div class="chart-label">${m.label}</div>`; chart.appendChild(col); });
+}
+
+/* =================== DIARY =================== */
+function diaryEntryHtml(chal, k, truncate) {
+  const badges = catList(chal.dates[k]).map(key=>{ const c=(chal.categories||[]).find(x=>x.key===key); return c?`<span class="de-badge" style="background:${c.color}22;color:${c.color};">${esc(c.label)}</span>`:''; }).join('');
+  let text = esc(chal.notes[k]||'');
+  if (truncate && text.length>140) text = text.slice(0,140)+'…';
+  return `<div class="diary-entry" data-key="${k}"><div class="de-head"><span class="de-date">${fmtDate(k)}</span>${badges}</div><div class="de-note">${text}</div></div>`;
+}
+function renderDiaryPreview(chal) {
+  const notes = chal.notes||{}; const keys=Object.keys(notes).sort().reverse();
+  const el=document.getElementById('diaryPreview');
+  if (!keys.length) { el.innerHTML='<div class="body-empty">Nenhuma anotação ainda. Toque num dia do calendário e escreva como foi.</div>'; return; }
+  el.innerHTML = keys.slice(0,2).map(k=>diaryEntryHtml(chal,k,true)).join('');
+  [...el.querySelectorAll('.diary-entry')].forEach(e=>e.addEventListener('click',()=>openDaySheet(e.dataset.key)));
+}
+document.getElementById('openDiary').addEventListener('click', () => {
+  const chal=activeChal();
+  document.getElementById('diaryChalName').textContent = chal.title;
+  const keys=Object.keys(chal.notes||{}).sort().reverse();
+  document.getElementById('diarySub').textContent = keys.length? `${keys.length} anotação(ões)` : 'Sem anotações ainda.';
+  const list=document.getElementById('diaryList');
+  list.innerHTML = keys.length ? keys.map(k=>diaryEntryHtml(chal,k,false)).join('') : '<div class="body-empty">Toque num dia do calendário para escrever sua primeira anotação.</div>';
+  [...list.querySelectorAll('.diary-entry')].forEach(e=>e.addEventListener('click',()=>{ closeOverlay('diaryOverlay'); openDaySheet(e.dataset.key); }));
+  openOverlay('diaryOverlay');
+});
+document.getElementById('diaryClose').addEventListener('click', ()=>closeOverlay('diaryOverlay'));
+
+/* =================== DAY SHEET =================== */
+let pendingKey=null, pendingCats=new Set(), pendingDone=false;
+document.getElementById('markToday').addEventListener('click', () => {
+  const chal=activeChal();
+  if (chal.categories && chal.categories.length) { openDaySheet(todayKey); return; }
+  if (isDone(chal,todayKey)) delete chal.dates[todayKey]; else chal.dates[todayKey]=true;
+  save(); renderApp();
+});
+function openDaySheet(key) {
+  if (key>todayKey) return;
+  const chal=activeChal(); pendingKey=key;
+  pendingCats=new Set(catList(chal.dates[key])); pendingDone=isDone(chal,key);
+  document.getElementById('dsDate').textContent=fmtDate(key);
+  const hasCats = chal.categories && chal.categories.length;
+  document.getElementById('dsCatWrap').classList.toggle('hidden', !hasCats);
+  document.getElementById('dsDoneWrap').classList.toggle('hidden', hasCats);
+  if (hasCats) {
+    const grid=document.getElementById('dsCatGrid'); grid.innerHTML='';
+    chal.categories.forEach(g=>{ const b=document.createElement('button'); b.className='picker-btn'+(pendingCats.has(g.key)?' sel':''); b.innerHTML=`<span class="legend-dot" style="background:${g.color}"></span>${esc(g.label)}<span class="pk-check">✓</span>`; b.addEventListener('click',()=>{ if(pendingCats.has(g.key))pendingCats.delete(g.key); else pendingCats.add(g.key); b.classList.toggle('sel'); }); grid.appendChild(b); });
+  } else updateDoneToggle();
+  document.getElementById('dsNote').value = (chal.notes && chal.notes[key]) || '';
+  openOverlay('daySheet');
+}
+function updateDoneToggle() { const b=document.getElementById('dsDoneToggle'); b.textContent = pendingDone ? '✓ Concluído neste dia' : 'Marcar como concluído'; b.classList.toggle('toggle-on', pendingDone); }
+document.getElementById('dsDoneToggle').addEventListener('click', () => { pendingDone=!pendingDone; updateDoneToggle(); });
+document.getElementById('dsCancel').addEventListener('click', () => closeOverlay('daySheet'));
+document.getElementById('dsSave').addEventListener('click', () => {
+  const chal=activeChal(), key=pendingKey; const hasCats=chal.categories && chal.categories.length;
+  if (hasCats) { if (pendingCats.size===0) delete chal.dates[key]; else chal.dates[key]=Array.from(pendingCats); }
+  else { if (pendingDone) chal.dates[key]=true; else delete chal.dates[key]; }
+  const note=document.getElementById('dsNote').value.trim();
+  chal.notes = chal.notes || {};
+  if (note) chal.notes[key]=note; else delete chal.notes[key];
+  save(); closeOverlay('daySheet'); renderApp();
+});
+
+/* =================== NAV / GOAL =================== */
+document.getElementById('prevMonth').addEventListener('click', ()=>{ viewDate.setMonth(viewDate.getMonth()-1); renderCalendar(activeChal()); });
+document.getElementById('nextMonth').addEventListener('click', ()=>{ viewDate.setMonth(viewDate.getMonth()+1); renderCalendar(activeChal()); });
+document.getElementById('goalInput').addEventListener('change', (e)=>{ let v=parseInt(e.target.value,10); if(isNaN(v)||v<1)v=1; if(v>7)v=7; activeChal().weeklyGoal=v; e.target.value=v; save(); renderApp(); });
+document.getElementById('detailBack').addEventListener('click', ()=>route());
+
+/* =================== OVERLAYS =================== */
+function openOverlay(id){ document.getElementById(id).classList.add('show'); }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); }
+['chalSheet','daySheet','diaryOverlay','createSheet','bodyOverlay','metricSheet','confirmSheet'].forEach(id=>{ document.getElementById(id).addEventListener('click',(e)=>{ if(e.target.id===id) closeOverlay(id); }); });
+document.getElementById('sheetClose').addEventListener('click', ()=>closeOverlay('chalSheet'));
+
+/* generic confirm modal */
+let confirmCb=null;
+function openConfirm({title, message, okLabel='Confirmar', onOk}) {
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').innerHTML=message;
+  document.getElementById('confirmOk').textContent=okLabel;
+  confirmCb=onOk; openOverlay('confirmSheet');
+}
+document.getElementById('confirmCancel').addEventListener('click', ()=>{ confirmCb=null; closeOverlay('confirmSheet'); });
+document.getElementById('confirmOk').addEventListener('click', ()=>{ const cb=confirmCb; confirmCb=null; closeOverlay('confirmSheet'); if(cb) cb(); });
+
+function requestDeleteChallenge(id) {
+  const c=state.challenges.find(x=>x.id===id); if(!c) return;
+  const marks=totalDone(c.dates), notes=Object.keys(c.notes||{}).length, meas=(c.measurements||[]).length;
+  const metricPts=Object.values(c.metricLogs||{}).reduce((s,arr)=>s+(arr?arr.length:0),0);
+  const parts=[`${marks} marcação(ões)`];
+  if (notes) parts.push(`${notes} anotação(ões) do diário`);
+  if (meas) parts.push(`${meas} avaliação(ões) corporal(is)`);
+  if (metricPts) parts.push(`${metricPts} registro(s) de métricas`);
+  openConfirm({
+    title:`Excluir "${c.title}"?`,
+    message:`Todos os dados deste desafio serão perdidos: ${parts.join(', ')}. <b style="color:#FF7A5C">Essa ação não pode ser desfeita.</b>`,
+    okLabel:'Excluir',
+    onOk:()=>{ state.challenges=state.challenges.filter(x=>x.id!==id); if(state.activeId===id) state.activeId=state.challenges[0]?state.challenges[0].id:null; save(); afterDelete(); }
+  });
+}
+function afterDelete(){ closeOverlay('chalSheet'); if(!document.getElementById('profile').classList.contains('hidden')) openProfile(); else route(); }
+
+/* =================== CHALLENGE SHEET =================== */
+document.getElementById('chalChip').addEventListener('click', openChalSheet);
+function openChalSheet() {
+  const list=document.getElementById('sheetChalList'); list.innerHTML='';
+  state.challenges.forEach(c=>{
+    const it=document.createElement('div'); it.className='chal-item'+(c.id===state.activeId?' active':'');
+    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${calcCurrentStreak(c.dates)} • ${esc(c.unit)}</div></div><button class="ti-del" title="Excluir">🗑</button>`;
+    it.querySelector('.ti-body').addEventListener('click',()=>{ closeOverlay('chalSheet'); openDetail(c.id); });
+    it.querySelector('.ti-emoji').addEventListener('click',()=>{ closeOverlay('chalSheet'); openDetail(c.id); });
+    it.querySelector('.ti-del').addEventListener('click',(ev)=>{ ev.stopPropagation(); requestDeleteChallenge(c.id); });
+    list.appendChild(it);
+  });
+  openOverlay('chalSheet');
+}
+document.getElementById('sheetNewChal').addEventListener('click', ()=>{ closeOverlay('chalSheet'); openCreate(); });
+document.getElementById('homeAddChal').addEventListener('click', ()=>openCreate());
+
+/* =================== CREATE =================== */
+let cf = { emoji:'🔥', color:'#E3B23C' };
+let cfMetrics = [];
+let cfVarTpl = null, cfVarChoice = null;
+function openCreate() {
+  document.getElementById('createStep1').classList.remove('hidden');
+  document.getElementById('createStepVar').classList.add('hidden');
+  document.getElementById('createStep2').classList.add('hidden');
+  const tpl=document.getElementById('tplList'); tpl.innerHTML='';
+  TEMPLATES.forEach(t=>{
+    const it=document.createElement('div'); it.className='tpl-item';
+    const bits=[]; if (t.cats) bits.push(`${t.cats.length} categorias`); bits.push(`meta ${t.goal}/sem`); if ((t.modules||[]).includes('body')) bits.push('avaliação corporal'); if (t.variant) bits.push('escolha o tipo');
+    it.innerHTML=`<span class="ti-emoji">${t.emoji}</span><div class="ti-body"><div class="ti-title">${t.title}</div><div class="ti-sub">${bits.join(' · ')}</div></div>`;
+    it.addEventListener('click',()=>{ if (t.variant) openVariant(t); else { addChallenge(t); closeOverlay('createSheet'); openDetail(state.activeId); } });
+    tpl.appendChild(it);
+  });
+  openOverlay('createSheet');
+}
+document.getElementById('createClose1').addEventListener('click', ()=>closeOverlay('createSheet'));
+
+function openVariant(t) {
+  cfVarTpl=t; cfVarChoice=null;
+  document.getElementById('varTitle').textContent=t.variant.prompt;
+  const grid=document.getElementById('varGrid'); grid.innerHTML='';
+  t.variant.options.forEach(opt=>{ const b=document.createElement('button'); b.className='picker-btn'; b.textContent=opt; b.addEventListener('click',()=>{ cfVarChoice=opt; document.getElementById('varCustom').value=''; [...grid.children].forEach(c=>c.classList.remove('sel')); b.classList.add('sel'); }); grid.appendChild(b); });
+  document.getElementById('varCustom').value='';
+  document.getElementById('createStep1').classList.add('hidden');
+  document.getElementById('createStepVar').classList.remove('hidden');
+}
+document.getElementById('varCustom').addEventListener('input', ()=>{ cfVarChoice=null; [...document.getElementById('varGrid').children].forEach(c=>c.classList.remove('sel')); });
+document.getElementById('varBack').addEventListener('click', ()=>{ document.getElementById('createStepVar').classList.add('hidden'); document.getElementById('createStep1').classList.remove('hidden'); });
+document.getElementById('varSave').addEventListener('click', ()=>{
+  const choice = (document.getElementById('varCustom').value.trim() || cfVarChoice);
+  if (!choice) { alert('Escolha da lista ou escreva um.'); return; }
+  const t=cfVarTpl, v=t.variant, low=choice.toLowerCase();
+  addChallenge({ title: v.prefix + low, emoji:t.emoji, color:t.color, unit: v.unitPrefix + low, goal:t.goal });
+  closeOverlay('createSheet'); openDetail(state.activeId);
+});
+
+document.getElementById('startCustom').addEventListener('click', ()=>{
+  cf={ emoji:'🔥', color:'#E3B23C' }; cfMetrics=[];
+  document.getElementById('cf_title').value='';
+  document.getElementById('cf_unit').value='dias seguidos';
+  document.getElementById('cf_goal').value=5;
+  document.getElementById('cf_useCats').checked=false;
+  document.getElementById('cf_cats').value='';
+  document.getElementById('cf_catsField').classList.add('hidden');
+  document.getElementById('cf_useBody').checked=false;
+  document.getElementById('cf_mName').value=''; document.getElementById('cf_mUnit').value='';
+  renderMetricChips();
+  buildEmojiRow(); buildColorRow();
+  document.getElementById('createStep1').classList.add('hidden');
+  document.getElementById('createStep2').classList.remove('hidden');
+});
+document.getElementById('createBack').addEventListener('click', ()=>{ document.getElementById('createStep2').classList.add('hidden'); document.getElementById('createStep1').classList.remove('hidden'); });
+document.getElementById('cf_useCats').addEventListener('change', (e)=>document.getElementById('cf_catsField').classList.toggle('hidden', !e.target.checked));
+function buildEmojiRow(){ const row=document.getElementById('cf_emojiRow'); row.innerHTML=''; EMOJIS.forEach(em=>{ const b=document.createElement('button'); b.className='emoji-opt'+(em===cf.emoji?' sel':''); b.textContent=em; b.addEventListener('click',()=>{ cf.emoji=em; buildEmojiRow(); }); row.appendChild(b); }); }
+function buildColorRow(){ const row=document.getElementById('cf_colorRow'); row.innerHTML=''; PALETTE.forEach(col=>{ const b=document.createElement('button'); b.className='color-opt'+(col===cf.color?' sel':''); b.style.background=col; b.addEventListener('click',()=>{ cf.color=col; setAccent(col); buildColorRow(); }); row.appendChild(b); }); }
+function renderMetricChips(){ const el=document.getElementById('cf_metricList'); el.innerHTML=''; cfMetrics.forEach((m,i)=>{ const chip=document.createElement('span'); chip.className='chip'; chip.innerHTML=`${esc(m.name)}${m.unit?` <span style="color:#6E6752">(${esc(m.unit)})</span>`:''} <button>×</button>`; chip.querySelector('button').addEventListener('click',()=>{ cfMetrics.splice(i,1); renderMetricChips(); }); el.appendChild(chip); }); }
+document.getElementById('cf_addMetric').addEventListener('click', ()=>{ const name=document.getElementById('cf_mName').value.trim(); const unit=document.getElementById('cf_mUnit').value.trim(); if(!name){ document.getElementById('cf_mName').focus(); return; } cfMetrics.push({ name, unit }); document.getElementById('cf_mName').value=''; document.getElementById('cf_mUnit').value=''; renderMetricChips(); });
+document.getElementById('createSave').addEventListener('click', ()=>{
+  const title=document.getElementById('cf_title').value.trim()||'Meu desafio';
+  const unit=document.getElementById('cf_unit').value.trim()||'dias seguidos';
+  let goal=parseInt(document.getElementById('cf_goal').value,10); if(isNaN(goal)||goal<1)goal=1; if(goal>7)goal=7;
+  let cats=[];
+  if (document.getElementById('cf_useCats').checked) {
+    cats=document.getElementById('cf_cats').value.split(',').map(s=>s.trim()).filter(Boolean).map((label,i)=>({ key:'k'+i+'_'+label.toLowerCase().replace(/[^a-z0-9]/g,''), label, color:PALETTE[i%PALETTE.length] }));
+  }
+  const modules=[]; if (document.getElementById('cf_useBody').checked) modules.push('body');
+  addChallenge({ title, emoji:cf.emoji, color:cf.color, unit, goal, cats, modules, metrics: cfMetrics.slice() });
+  closeOverlay('createSheet'); openDetail(state.activeId);
+});
+
+/* =================== TRACKING MODULES =================== */
+function renderModules(chal) {
+  const wrap=document.getElementById('moduleCards'); wrap.innerHTML='';
+  (chal.modules||[]).forEach(mod=>{
+    if (mod.type==='body') wrap.appendChild(buildBodyCard(chal));
+    else if (mod.type==='metric') wrap.appendChild(buildMetricCard(chal, mod));
+  });
+}
+function buildBodyCard(chal) {
+  const card=document.createElement('div'); card.className='card';
+  card.innerHTML=`<div class="card-head"><div class="card-title">📏 Avaliação corporal</div><button class="add-btn" data-body-add>+ Nova avaliação</button></div><div class="table-scroll"><table class="entry-table" data-body-table></table></div><div class="body-empty" data-body-empty>Nenhuma avaliação registrada ainda.</div>`;
+  card.querySelector('[data-body-add]').addEventListener('click', openBodyForm);
+  fillBodyTable(chal, card.querySelector('[data-body-table]'), card.querySelector('[data-body-empty]'));
+  return card;
+}
+function buildMetricCard(chal, mod) {
+  const logs=(chal.metricLogs[mod.id]||[]).slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const card=document.createElement('div'); card.className='card';
+  const last = logs.length ? logs[logs.length-1] : null;
+  let html=`<div class="card-head"><div class="card-title">📊 ${esc(mod.name)}${mod.unit?` <span style="color:#6E6752;font-weight:400">(${esc(mod.unit)})</span>`:''}</div><button class="add-btn" data-metric-add>+ Registrar</button></div>`;
+  if (logs.length>=2) html += `<div class="spark">${sparkline(logs.map(l=>l.value))}</div>`;
+  if (!logs.length) html += `<div class="body-empty">Nenhum registro ainda.</div>`;
+  else {
+    const rows=logs.slice().reverse().map((e,i,arr)=>{ const prev=arr[i+1]; return `<tr><td>${fmtDate(e.date)}</td><td>${e.value}${mod.unit?' '+esc(mod.unit):''}${deltaHtml(e.value, prev&&prev.value)}</td></tr>`; }).join('');
+    html += `<div class="table-scroll"><table class="entry-table"><thead><tr><th>Data</th><th>Valor</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  }
+  card.innerHTML=html;
+  card.querySelector('[data-metric-add]').addEventListener('click', ()=>openMetricSheet(mod));
+  return card;
+}
+function sparkline(vals) {
+  if (vals.length<2) return '';
+  const w=260,h=44,max=Math.max(...vals),min=Math.min(...vals),range=(max-min)||1;
+  const pts=vals.map((v,i)=>`${(i/(vals.length-1))*w},${(h-4)-((v-min)/range)*(h-8)}`).join(' ');
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="44" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
+}
+let msMod=null;
+function openMetricSheet(mod){ msMod=mod; document.getElementById('msTitle').textContent='Registrar — '+mod.name; document.getElementById('msSub').textContent = mod.unit?`Valor em ${mod.unit}.`:''; document.getElementById('ms_date').value=todayKey; document.getElementById('ms_value').value=''; openOverlay('metricSheet'); }
+document.getElementById('msCancel').addEventListener('click', ()=>closeOverlay('metricSheet'));
+document.getElementById('msSave').addEventListener('click', ()=>{
+  const chal=activeChal(); if(!chal||!msMod) return;
+  const date=document.getElementById('ms_date').value||todayKey;
+  const value=parseFloat(document.getElementById('ms_value').value);
+  if (isNaN(value)) { alert('Digite um valor numérico.'); return; }
+  chal.metricLogs[msMod.id]=chal.metricLogs[msMod.id]||[];
+  chal.metricLogs[msMod.id]=chal.metricLogs[msMod.id].filter(e=>e.date!==date);
+  chal.metricLogs[msMod.id].push({ date, value });
+  save(); closeOverlay('metricSheet'); renderApp();
+});
+
+/* =================== BODY ASSESSMENT =================== */
+function classifyBMI(b){ if(b<18.5)return'abaixo do peso'; if(b<25)return'peso adequado'; if(b<30)return'sobrepeso'; return'obesidade'; }
+function classifyWHR(w,sex){ return w<=(sex==='F'?0.85:0.90)?'risco baixo':'risco elevado'; }
+function computeBF({sex,age,height,weight,neck,waist,hip}) {
+  let bf=null, method='';
+  if (neck&&waist&&height&&(sex==='M'||(sex==='F'&&hip))) { const arg=sex==='M'?(waist-neck):(waist+hip-neck); if(arg>0){ bf=sex==='M'?495/(1.0324-0.19077*Math.log10(arg)+0.15456*Math.log10(height))-450:495/(1.29579-0.35004*Math.log10(arg)+0.22100*Math.log10(height))-450; method='perímetros corporais (método da Marinha dos EUA)'; } }
+  if (bf===null||!isFinite(bf)||bf<=0||bf>60) { const bmi=weight/Math.pow(height/100,2); bf=1.20*bmi+0.23*age-10.8*(sex==='M'?1:0)-5.4; method='IMC, idade e sexo (fórmula de Deurenberg)'; }
+  return { bf, method };
+}
+function openBodyForm(){ document.getElementById('bf_date').value=todayKey; document.getElementById('bodyResult').classList.remove('show'); openOverlay('bodyOverlay'); }
+document.getElementById('bodyCancel').addEventListener('click', ()=>{ ['bf_age','bf_weight','bf_height','bf_neck','bf_waist','bf_hip','bf_chest','bf_biceps','bf_forearm','bf_thigh'].forEach(id=>document.getElementById(id).value=''); closeOverlay('bodyOverlay'); });
+document.getElementById('bodyCalc').addEventListener('click', submitBody);
+function num(id){ return parseFloat(document.getElementById(id).value)||null; }
+function submitBody(){
+  const chal=activeChal(); if(!chal) return;
+  const sex=document.getElementById('bf_sex').value; const age=num('bf_age'),weight=num('bf_weight'),height=num('bf_height');
+  const neck=num('bf_neck'),waist=num('bf_waist'),hip=num('bf_hip'),chest=num('bf_chest'),biceps=num('bf_biceps'),forearm=num('bf_forearm'),thigh=num('bf_thigh');
+  const dateVal=document.getElementById('bf_date').value||todayKey;
+  if (!age||!weight||!height){ alert('Preencha ao menos idade, peso e altura.'); return; }
+  const bmi=weight/Math.pow(height/100,2); const {bf,method}=computeBF({sex,age,height,weight,neck,waist,hip});
+  const fatMass=weight*(bf/100), leanMass=weight-fatMass;
+  let whr=null,whrLabel=''; if(waist&&hip){ whr=Math.round((waist/hip)*100)/100; whrLabel=classifyWHR(whr,sex); }
+  const entry={ date:dateVal,sex,age,weight,height,neck,waist,hip,chest,biceps,forearm,thigh, bmi:Math.round(bmi*10)/10, bf:Math.round(bf*10)/10, bfMethod:method, fatMass:Math.round(fatMass*10)/10, leanMass:Math.round(leanMass*10)/10, whr, whrLabel };
+  chal.measurements=(chal.measurements||[]).filter(e=>e.date!==entry.date); chal.measurements.push(entry);
+  save(); showBodyResult(entry); renderApp();
+}
+function showBodyResult(e){ const box=document.getElementById('bodyResult'); box.classList.add('show'); box.innerHTML=`<div class="result-row"><span>% de gordura estimado</span><strong>${e.bf}%</strong></div><div class="result-row"><span>IMC</span><strong>${e.bmi} · ${classifyBMI(e.bmi)}</strong></div><div class="result-row"><span>Massa gorda</span><strong>${e.fatMass} kg</strong></div><div class="result-row"><span>Massa magra</span><strong>${e.leanMass} kg</strong></div>${e.whr?`<div class="result-row"><span>Cintura-quadril</span><strong>${e.whr} · ${e.whrLabel}</strong></div>`:''}<div class="result-note">Cálculo por ${e.bfMethod}. Estimativas têm margem de erro e não substituem bioimpedância, dobras cutâneas ou avaliação profissional. Registro salvo.</div>`; }
+function deltaHtml(curr,prev,invert){ if(prev==null||curr==null) return ''; const diff=Math.round((curr-prev)*10)/10; if(diff===0) return `<span class="delta flat">sem variação</span>`; const up=diff>0, good=invert?!up:up; return `<span class="delta ${good?'up':'down'}">${up?'+':''}${diff} vs. anterior</span>`; }
+function fillBodyTable(chal, table, empty) {
+  const list=(chal.measurements||[]).slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if (!list.length) { table.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  let rows=''; list.forEach((e,i)=>{ const p=list[i+1]; rows+=`<tr><td>${fmtDate(e.date)}</td><td>${e.weight} kg${deltaHtml(e.weight,p&&p.weight)}</td><td>${e.bf}%${deltaHtml(e.bf,p&&p.bf,true)}</td><td>${e.leanMass} kg${deltaHtml(e.leanMass,p&&p.leanMass)}</td><td>${e.waist!=null?e.waist+' cm':'—'}${deltaHtml(e.waist,p&&p.waist,true)}</td><td>${e.whr!=null?e.whr:'—'}</td></tr>`; });
+  table.innerHTML=`<thead><tr><th>Data</th><th>Peso</th><th>% Gord.</th><th>Magra</th><th>Cintura</th><th>RCQ</th></tr></thead><tbody>${rows}</tbody>`;
+}
+
+/* =================== PROFILE =================== */
+document.getElementById('avatarBtn').addEventListener('click', openProfile);
+document.getElementById('homeAvatar').addEventListener('click', openProfile);
+document.getElementById('profileBack').addEventListener('click', ()=>route());
+function openProfile() {
+  const initial=(state.profile.name||'A').trim().charAt(0).toUpperCase()||'A';
+  document.getElementById('profileAv').textContent=initial;
+  document.getElementById('profileName').textContent=state.profile.name||'—';
+  document.getElementById('profileMeta').textContent=`${state.challenges.length} desafio(s) • desde ${(state.profile.createdAt||'').split('-').reverse().join('/')}`;
+  document.getElementById('editName').value=state.profile.name||'';
+  renderProfileChalList(); renderInstallHint(); show('profile');
+}
+function renderProfileChalList() {
+  const list=document.getElementById('profileChalList'); list.innerHTML='';
+  if (!state.challenges.length){ list.innerHTML='<div class="body-empty">Nenhum desafio ainda.</div>'; return; }
+  state.challenges.forEach(c=>{
+    const it=document.createElement('div'); it.className='chal-item'+(c.id===state.activeId?' active':'');
+    it.innerHTML=`<span class="ti-emoji">${c.emoji}</span><div class="ti-body"><div class="ti-title">${esc(c.title)}</div><div class="ti-sub">${totalDone(c.dates)} marcações • melhor ${calcBestStreak(c.dates)}</div></div><button class="ti-del" title="Apagar">🗑</button>`;
+    it.querySelector('.ti-body').addEventListener('click',()=>openDetail(c.id));
+    it.querySelector('.ti-emoji').addEventListener('click',()=>openDetail(c.id));
+    it.querySelector('.ti-del').addEventListener('click',(ev)=>{ ev.stopPropagation(); requestDeleteChallenge(c.id); });
+    list.appendChild(it);
+  });
+}
+document.getElementById('saveName').addEventListener('click', ()=>{ const v=document.getElementById('editName').value.trim(); if(!v){ alert('Digite um nome.'); return; } state.profile.name=v; save(); openProfile(); });
+document.getElementById('profileAddChal').addEventListener('click', ()=>openCreate());
+document.getElementById('resetBtn').addEventListener('click', ()=>openConfirm({ title:'Apagar tudo?', message:'Seu nome, <b>todos os desafios</b> e todo o histórico deste aparelho serão apagados. <b style="color:#FF7A5C">Essa ação não pode ser desfeita.</b>', okLabel:'Apagar tudo', onOk:()=>{ localStorage.removeItem(KEY); state=defaultState(); route(); } }));
+
+/* =================== ONBOARDING =================== */
+document.getElementById('obStart').addEventListener('click', startOnboard);
+document.getElementById('obName').addEventListener('keydown', (e)=>{ if(e.key==='Enter') startOnboard(); });
+function startOnboard(){ const v=document.getElementById('obName').value.trim(); if(!v){ document.getElementById('obName').focus(); return; } state.profile.name=v; state.profile.createdAt=state.profile.createdAt||today(); state.onboarded=true; save(); route(); }
+
+/* =================== PWA =================== */
+function makeIcon(size,color,emoji){ const c=document.createElement('canvas'); c.width=size; c.height=size; const ctx=c.getContext('2d'); ctx.fillStyle='#16140F'; ctx.fillRect(0,0,size,size); const r=size*0.22; ctx.fillStyle=color; ctx.beginPath(); ctx.moveTo(r,0); ctx.arcTo(size,0,size,size,r); ctx.arcTo(size,size,0,size,r); ctx.arcTo(0,size,0,0,r); ctx.arcTo(0,0,size,0,r); ctx.closePath(); ctx.fill(); ctx.font=`${Math.round(size*0.5)}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(emoji||'🔥', size/2, size*0.56); return c.toDataURL('image/png'); }
+function setupPWA(){ const chal=activeChal(); const color=(chal&&chal.color)||'#E3B23C'; const emoji='🔥'; try { const i192=makeIcon(192,color,emoji), i512=makeIcon(512,color,emoji); document.getElementById('appleIcon').setAttribute('href', makeIcon(180,color,emoji)); const manifest={ name:'Constância', short_name:'Constância', start_url:'.', display:'standalone', background_color:'#16140F', theme_color:'#16140F', icons:[{src:i192,sizes:'192x192',type:'image/png',purpose:'any'},{src:i512,sizes:'512x512',type:'image/png',purpose:'any maskable'}] }; const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'}); const url=URL.createObjectURL(blob); let link=document.querySelector('link[rel=manifest]'); if(!link){ link=document.createElement('link'); link.rel='manifest'; document.head.appendChild(link); } link.href=url; } catch(e){} }
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; });
+function isIOS(){ return /iphone|ipad|ipod/i.test(navigator.userAgent); }
+function isStandalone(){ return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true; }
+document.getElementById('installBtn').addEventListener('click', async ()=>{ if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; return; } if(isIOS()){ alert('No iPhone/iPad: toque em Compartilhar (quadrado com seta pra cima) na barra do Safari e escolha "Adicionar à Tela de Início".'); return; } alert('No celular: abra o menu do navegador (⋮) e toque em "Adicionar à tela inicial" / "Instalar app".'); });
+function renderInstallHint(){ const el=document.getElementById('installHint'); if(isStandalone()){ el.innerHTML='✅ <b>App instalado.</b> Você está usando em tela cheia.'; return; } if(isIOS()){ el.innerHTML='<b>iPhone / iPad:</b> abra no <b>Safari</b>, toque em <b>Compartilhar</b> ⬆️ e em <b>Adicionar à Tela de Início</b>.'; } else { el.innerHTML='<b>Android:</b> abra no <b>Chrome</b>, toque no menu <b>⋮</b> e em <b>Adicionar à tela inicial</b> / <b>Instalar app</b>. Funciona melhor com a página num link https.'; } }
+
+/* =================== INIT =================== */
+(function init(){ load(); setupPWA(); route(); })();
+</script>
+</body>
+</html>
